@@ -2713,7 +2713,14 @@ document.getElementById('coverMusicOrb').style.display=musicState.videoId?'flex'
 (function(){
   const s=document.createElement('script');
   s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-  s.onload=initSupabase;
+  s.onload=function(){
+    console.log('[Hive Auth] Supabase SDK loaded successfully');
+    initSupabase();
+  };
+  s.onerror=function(){
+    console.error('[Hive Auth] FAILED to load Supabase SDK from CDN');
+    showAuthAlert('⚠️ Could not connect to the login service. This can happen if you\'re opening this file directly (file://) instead of via a web server, or if an ad-blocker/firewall is blocking cdn.jsdelivr.net. Try hosting this file on a real server (e.g. Netlify, Vercel) or disabling ad-blockers.','error');
+  };
   document.head.appendChild(s);
 })();
 
@@ -2745,8 +2752,16 @@ async function checkExistingSession(){
   try{
     const {data:{session}}=await supabase.auth.getSession();
     if(session){currentUser=session.user;hideAuthScreen();updateSidebarUser(session.user);}
-  }catch(e){}
+  }catch(e){console.error('[Hive Auth] Session check failed:',e);}
 }
+
+// Watchdog: if Supabase never initializes, tell the user clearly instead of silent failure
+setTimeout(function(){
+  if(!supabase){
+    console.error('[Hive Auth] Supabase still not initialized after 6s');
+    showAuthAlert('⚠️ Still connecting to the login service... If this persists, check your internet connection, disable ad-blockers, or open this page from a real URL instead of a local file.','error');
+  }
+}, 6000);
 
 function hideAuthScreen(){
   const s=document.getElementById('authScreen');
@@ -2923,7 +2938,14 @@ async function submitLogin(){
     showAuthAlert('Welcome back! 🎉','success');
     setTimeout(()=>enterPlatform(),1000);
   }catch(err){
-    showAuthAlert(err.message||'Login failed. Please check your credentials.');
+    console.error('[Hive Auth] Login error:',err);
+    let msg = err.message || 'Login failed. Please check your credentials.';
+    if(/email not confirmed/i.test(msg)){
+      msg = 'This account\'s email is not confirmed yet. If you created this user in the Supabase Dashboard, edit the user and enable "Auto Confirm User", or check "Confirm email" toggle under Authentication → Settings.';
+    } else if(/invalid login credentials/i.test(msg)){
+      msg = 'Incorrect email or password. Double-check for typos or extra spaces.';
+    }
+    showAuthAlert(msg);
   }finally{
     setAuthLoading('loginBtn','loginSpinner',false);
   }

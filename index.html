@@ -1253,11 +1253,6 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       </button>
       <div style="text-align:center;margin-top:18px;font-size:13px;color:#64748b">Don't have an account? <a onclick="switchAuthTab('register')" style="color:#6366f1;font-weight:700;cursor:pointer">Create one free</a></div>
 
-      <div style="display:flex;align-items:center;gap:12px;margin:20px 0 16px"><div style="flex:1;height:1px;background:#e2e8f0"></div><span style="font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Just browsing?</span><div style="flex:1;height:1px;background:#e2e8f0"></div></div>
-      <button id="demoBtn" onclick="tryDemoLogin()" style="width:100%;padding:13px;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;border:1.5px dashed #f59e0b;border-radius:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 6px 20px rgba(245,158,11,0.25)'" onmouseout="this.style.transform='';this.style.boxShadow='none'">
-        <span id="demoSpinner" style="display:none;width:15px;height:15px;border:2px solid rgba(146,64,14,0.3);border-top-color:#92400e;border-radius:50%;animation:spin 0.7s linear infinite"></span>
-        🐝 Try Demo Account — No Signup Needed
-      </button>
     </div>
 
     <!-- ── REGISTER ── -->
@@ -1428,10 +1423,10 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
 
   <div class="sidebar-footer">
     <div class="profile-mini" onclick="showPage('profile',null)">
-      <div class="avatar online">JD</div>
+      <div class="avatar online">ME</div>
       <div>
-        <div class="profile-name">Jordan Dev</div>
-        <div class="profile-handle">@jordandev</div>
+        <div class="profile-name">Guest</div>
+        <div class="profile-handle">@guest</div>
       </div>
       <span style="color:var(--text3);font-size:16px;margin-left:auto" onclick="event.stopPropagation();logoutUser()" title="Sign out">⏻</span>
     </div>
@@ -1510,101 +1505,10 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     </div>
   </div>
   <div class="feed" id="feed">
-    <div class="post-card">
-      <div class="post-header">
-        <div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div>
-        <div class="post-meta"><div class="post-author">Mia Kovacs <span class="post-badge">Creator</span></div><div class="post-sub">@miakovacs <span class="dot"></span> 2h ago <span class="dot"></span> 🌍 Public</div></div>
-        <span class="post-more" onclick="showToast('⋯','Post options')">⋯</span>
-      </div>
-      <div class="post-body">Just shipped the redesign for our onboarding flow — user activation up 34% in the first week 🎉<br><br>Less is more. Cut 4 steps, removed all jargon, made the value obvious in 10 seconds flat.<br><br><span class="tag">#ProductDesign</span> <span class="tag">#UX</span> <span class="tag">#Growth</span></div>
-      <div class="post-image-grid"><div class="post-img-item grad-1" style="height:215px;grid-column:1/-1;font-size:46px">🎨</div></div>
-      <div class="post-actions">
-        <div class="action-btn liked" onclick="toggleLike(this)">❤ <span>2.4k</span></div>
-        <div class="action-btn" onclick="openComments('Mia Kovacs')">💬 <span>148</span></div>
-        <div class="action-btn" onclick="showToast('🔁','Repost options')">🔁 <span>382</span></div>
-        <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
-        <div class="action-btn" onclick="showToast('↗','Link copied!')">↗ Share</div>
-      </div>
-      <div class="post-reactions">
-        <div class="post-reaction-chip mine" onclick="this.classList.toggle('mine')">❤️ 847</div>
-        <div class="post-reaction-chip" onclick="this.classList.toggle('mine')">🔥 312</div>
-        <div class="post-reaction-chip" onclick="this.classList.toggle('mine')">🚀 128</div>
-        <div class="post-reaction-chip" onclick="showReactions(this)" style="background:var(--surface2)">+ React</div>
-      </div>
-    </div>
-    <div class="post-card">
-      <div class="post-header">
-        <div class="avatar" style="background:linear-gradient(135deg,var(--hive-teal),var(--blue))">AT</div>
-        <div class="post-meta"><div class="post-author">Alex Thompson <span class="live-dot">LIVE</span></div><div class="post-sub">@alexthompson <span class="dot"></span> Live now <span class="dot"></span> 👥 1.2k watching</div></div>
-        <span class="post-more" onclick="showToast('⋯','Post options')">⋯</span>
-      </div>
-      <div class="post-body">Going live to build a full-stack AI app from scratch in 2 hours. Raw APIs + clean architecture. Ask questions 👇</div>
-      <div class="post-image-grid"><div class="post-img-item grad-4" style="height:235px;grid-column:1/-1;font-size:52px;flex-direction:column;gap:8px" onclick="showToast('📺','Opening live stream...')">▶️<span style="font-size:14px;color:rgba(255,255,255,.75);font-weight:600">Join Live Stream · 1.2k watching</span></div></div>
-      <div class="post-actions">
-        <div class="action-btn" onclick="toggleLike(this)">❤ <span>891</span></div>
-        <div class="action-btn" onclick="openComments('Alex Thompson')">💬 <span>2.1k</span></div>
-        <div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>540</span></div>
-        <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
-        <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
-      </div>
-    </div>
-    <div class="post-card">
-      <div class="post-header">
-        <div class="avatar" style="background:linear-gradient(135deg,#a78bfa,#60a5fa)">DC</div>
-        <div class="post-meta"><div class="post-author">Dev Collective</div><div class="post-sub">Community <span class="dot"></span> 5h ago <span class="dot"></span> 👥 14.2k members</div></div>
-        <span class="post-more">⋯</span>
-      </div>
-      <div class="post-body">📊 <strong>Weekly Poll: What's your go-to stack in 2025?</strong><br><br>We asked 3,000+ devs — React still leads but Svelte is climbing fast.</div>
-      <div style="background:var(--surface2);border-radius:11px;padding:14px;margin-bottom:13px">
-        <div style="display:flex;flex-direction:column;gap:10px">
-          <div onclick="showToast('📊','Voted React!')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:500">React / Next.js</span><span style="color:var(--text2)">48%</span></div><div style="height:7px;background:var(--surface3);border-radius:4px;overflow:hidden"><div style="height:100%;width:48%;background:linear-gradient(90deg,var(--hive-teal),var(--blue));border-radius:4px;transition:width .6s"></div></div></div>
-          <div onclick="showToast('📊','Voted Svelte!')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:500">Svelte / SvelteKit</span><span style="color:var(--text2)">27%</span></div><div style="height:7px;background:var(--surface3);border-radius:4px;overflow:hidden"><div style="height:100%;width:27%;background:linear-gradient(90deg,#38d9f5,#3a7bd5);border-radius:4px"></div></div></div>
-          <div onclick="showToast('📊','Voted Vue!')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:500">Vue / Nuxt</span><span style="color:var(--text2)">15%</span></div><div style="height:7px;background:var(--surface3);border-radius:4px;overflow:hidden"><div style="height:100%;width:15%;background:linear-gradient(90deg,#4ade80,#22d3ee);border-radius:4px"></div></div></div>
-          <div onclick="showToast('📊','Voted Other!')" style="cursor:pointer"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px"><span style="font-weight:500">Other</span><span style="color:var(--text2)">10%</span></div><div style="height:7px;background:var(--surface3);border-radius:4px;overflow:hidden"><div style="height:100%;width:10%;background:linear-gradient(90deg,#f59e0b,#f97316);border-radius:4px"></div></div></div>
-        </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:11px">3,284 votes · 2 days left</div>
-      </div>
-      <div class="post-actions">
-        <div class="action-btn" onclick="toggleLike(this)">❤ <span>1.1k</span></div>
-        <div class="action-btn" onclick="openComments('Dev Collective')">💬 <span>234</span></div>
-        <div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>167</span></div>
-        <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
-        <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
-      </div>
-    </div>
-    <div class="post-card">
-      <div class="post-header">
-        <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">SM</div>
-        <div class="post-meta"><div class="post-author">Sarah Mendez <span class="post-badge" style="background:rgba(245,158,11,.12);color:#f59e0b">Pro</span></div><div class="post-sub">@sarahdesigns <span class="dot"></span> 8h ago <span class="dot"></span> 🌍 Public</div></div>
-        <span class="post-more">⋯</span>
-      </div>
-      <div class="post-body">Weekend in Kyoto 🇯🇵 Arashiyama bamboo grove at golden hour — worth every 4am wake-up.<br><br><span class="tag">#Photography</span> <span class="tag">#Japan</span> <span class="tag">#Travel</span></div>
-      <div class="post-image-grid">
-        <div class="post-img-item grad-2">🌿</div><div class="post-img-item grad-3">🎋</div>
-        <div class="post-img-item grad-1">⛩</div><div class="post-img-item grad-4">🌸</div>
-      </div>
-      <div class="post-actions">
-        <div class="action-btn liked" onclick="toggleLike(this)">❤ <span>3.7k</span></div>
-        <div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>312</span></div>
-        <div class="action-btn" onclick="showToast('🔁','Reposted!')">🔁 <span>820</span></div>
-        <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
-        <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
-      </div>
-    </div>
-    <div class="post-card">
-      <div class="post-header">
-        <div class="avatar" style="background:linear-gradient(135deg,var(--purple),#ec4899)">KR</div>
-        <div class="post-meta"><div class="post-author">Kai Reyes <span class="post-badge" style="background:rgba(139,92,246,.12);color:var(--purple)">Design</span></div><div class="post-sub">@kaidesigns <span class="dot"></span> 12h ago <span class="dot"></span> 🌍 Public</div></div>
-        <span class="post-more">⋯</span>
-      </div>
-      <div class="post-body">The most underrated design principle: <strong>progressive disclosure</strong>.<br><br>Show only what's needed right now. Everything else? One tap away. Users don't need to see all 47 options at once — they need confidence that the option exists when they need it.<br><br><span class="tag">#DesignThinking</span> <span class="tag">#UIUX</span></div>
-      <div class="post-actions">
-        <div class="action-btn" onclick="toggleLike(this)">❤ <span>1.8k</span></div>
-        <div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>203</span></div>
-        <div class="action-btn" onclick="showToast('🔁','Reposted!')">🔁 <span>647</span></div>
-        <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
-        <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
-      </div>
+    <div id="feedEmptyState" style="text-align:center;padding:60px 20px;color:var(--text3)">
+      <div style="font-size:52px;margin-bottom:14px">🐝</div>
+      <div style="font-size:17px;font-weight:700;color:var(--text2);margin-bottom:6px">Your feed is quiet for now</div>
+      <div style="font-size:14px;max-width:320px;margin:0 auto">Be the first to share something! Write a post above and it'll show up here for the whole Hive community.</div>
     </div>
   </div>
 </div>
@@ -1613,32 +1517,27 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <div class="topbar"><span class="topbar-title">Profile</span><div class="topbar-right"><button class="btn-outline btn-sm" onclick="openMusicSettings()">🎵 Profile Music</button><button class="btn-outline btn-sm" onclick="showToast('✏','Edit profile')">✏ Edit Profile</button></div></div>
   <div class="profile-cover">
     <div class="cover-hex"></div>
-    <div class="profile-avatar-wrap"><div class="profile-avatar-lg">JD<div class="online-ring"></div></div></div>
+    <div class="profile-avatar-wrap"><div class="profile-avatar-lg" id="pf-avatar">JD<div class="online-ring"></div></div></div>
     <div class="music-orb" id="coverMusicOrb" onclick="toggleFloatPlayer()" title="Profile music" style="display:none">🎵</div>
   </div>
   <div class="profile-info-bar">
     <div>
-      <div class="pname">Jordan Dev ✦</div>
-      <div class="phandle">@jordandev · San Francisco, CA</div>
-      <div class="pbio">Building the future of social tech. Full-stack engineer, AI enthusiast &amp; eternal optimist. Currently building Hive 🐝 Open to collab.</div>
-      <div class="profile-skills">
-        <span class="skill-tag">React</span><span class="skill-tag">Next.js</span><span class="skill-tag">TypeScript</span>
-        <span class="skill-tag">Node.js</span><span class="skill-tag">AI/LLMs</span><span class="skill-tag">Product Design</span>
-      </div>
-      <div class="profile-links">
-        <span class="profile-link" onclick="showToast('🌐','Opening website...')">🌐 jordandev.io</span>
-        <span class="profile-link" onclick="showToast('🐦','Opening Twitter...')">🐦 @jordandev</span>
-        <span class="profile-link" onclick="showToast('💼','Opening LinkedIn...')">💼 LinkedIn</span>
-        <span class="profile-link" onclick="showToast('💻','Opening GitHub...')">💻 GitHub</span>
+      <div class="pname" id="pf-name">Your Name ✦</div>
+      <div class="phandle" id="pf-handle">@username · Add your location</div>
+      <div class="pbio" id="pf-bio">Tell the community about yourself — click Edit Profile to add a bio.</div>
+      <div class="profile-links" id="pf-links" style="display:none">
+        <span class="profile-link" id="pf-link-website" style="display:none">🌐 <span></span></span>
+        <span class="profile-link" id="pf-link-twitter" style="display:none">🐦 <span></span></span>
+        <span class="profile-link" id="pf-link-github" style="display:none">💻 <span></span></span>
       </div>
       <div class="profile-stats">
-        <div><div class="pstat-num">2.4k</div><div class="pstat-lbl">Followers</div></div>
-        <div><div class="pstat-num">847</div><div class="pstat-lbl">Following</div></div>
-        <div><div class="pstat-num">312</div><div class="pstat-lbl">Posts</div></div>
-        <div><div class="pstat-num">18.3k</div><div class="pstat-lbl">Views</div></div>
+        <div><div class="pstat-num" id="pf-stat-posts">0</div><div class="pstat-lbl">Posts</div></div>
+        <div><div class="pstat-num">0</div><div class="pstat-lbl">Followers</div></div>
+        <div><div class="pstat-num">0</div><div class="pstat-lbl">Following</div></div>
       </div>
     </div>
     <div class="profile-action-row">
+      <button class="btn-outline" onclick="openEditProfile()">✏️ Edit Profile</button>
       <button class="btn-primary" onclick="showToast('↗','Profile link copied!')">Share Profile</button>
     </div>
   </div>
@@ -1654,21 +1553,24 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       <div class="music-info"><div class="music-title" id="bannerMusicTitle">Loading…</div><div class="music-sub">Profile background music · Auto-plays on visit</div><div class="music-progress"><div class="music-progress-fill" id="bannerProgress"></div></div></div>
       <div class="music-controls"><div class="mc-btn" onclick="musicRewind()">⏮</div><div class="mc-btn play-btn" id="bannerPlayBtn" onclick="togglePlay()">▶</div><div class="mc-btn" onclick="toggleMute()" id="muteBtn">🔊</div></div>
     </div>
-    <div class="post-card"><div class="post-header"><div class="avatar online">JD</div><div class="post-meta"><div class="post-author">Jordan Dev</div><div class="post-sub">@jordandev <span class="dot"></span> 1d ago</div></div></div><div class="post-body">Just crossed 2,000 followers on Hive 🎉 Thank you all — building in public is hard but this community makes it worth it. <span class="tag">#BuildInPublic</span></div><div class="post-actions"><div class="action-btn liked" onclick="toggleLike(this)">❤ <span>412</span></div><div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>38</span></div><div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>91</span></div><div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div></div></div>
-    <div class="post-card"><div class="post-header"><div class="avatar online">JD</div><div class="post-meta"><div class="post-author">Jordan Dev</div><div class="post-sub">@jordandev <span class="dot"></span> 3d ago</div></div></div><div class="post-body">Hot take: the best productivity hack isn't a new app — it's ruthlessly cutting what doesn't matter. Closed 7 tabs I'd had open for months. Brain fog: gone. <span class="tag">#Productivity</span></div><div class="post-actions"><div class="action-btn" onclick="toggleLike(this)">❤ <span>876</span></div><div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>112</span></div><div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>203</span></div><div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div></div></div>
-    <div class="post-card"><div class="post-header"><div class="avatar online">JD</div><div class="post-meta"><div class="post-author">Jordan Dev</div><div class="post-sub">@jordandev <span class="dot"></span> 5d ago</div></div></div><div class="post-body">I rebuilt my entire dev setup this weekend. New keyboard, better lighting, cleaner desk. Placebo? Maybe. But the energy shift is real.<br><br><span class="tag">#DevLife</span> <span class="tag">#Setup</span></div><div class="post-image-grid"><div class="post-img-item grad-3" style="height:200px;grid-column:1/-1;font-size:48px">🖥️</div></div><div class="post-actions"><div class="action-btn" onclick="toggleLike(this)">❤ <span>543</span></div><div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>67</span></div><div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>124</span></div><div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div></div></div>
+<div id="profileFeed">
+      <div id="profileEmptyState" style="text-align:center;padding:50px 20px;color:var(--text3)">
+        <div style="font-size:44px;margin-bottom:12px">📝</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px">No posts yet</div>
+        <div style="font-size:13px;max-width:280px;margin:0 auto">Share your first post from the Home page and it'll appear here on your profile.</div>
+      </div>
+    </div>
     <!-- ABOUT SECTION (hidden by default, shown when About tab clicked) -->
     <div id="profileAboutSection" style="display:none">
       <div class="profile-about-grid">
-        <div class="about-card"><div class="about-card-label">📍 Location</div><div class="about-card-val">San Francisco, CA</div></div>
-        <div class="about-card"><div class="about-card-label">💼 Current Role</div><div class="about-card-val">Founder @ Hive</div></div>
-        <div class="about-card"><div class="about-card-label">🎓 Education</div><div class="about-card-val">BS CS · Stanford</div></div>
-        <div class="about-card"><div class="about-card-label">📅 Joined</div><div class="about-card-val">January 2024</div></div>
-        <div class="about-card"><div class="about-card-label">🌐 Website</div><div class="about-card-val" style="color:var(--brand);cursor:pointer" onclick="showToast('🌐','jordandev.io')">jordandev.io</div></div>
-        <div class="about-card"><div class="about-card-label">📬 Email</div><div class="about-card-val">jordan@dev.io</div></div>
+        <div class="about-card"><div class="about-card-label">📍 Location</div><div class="about-card-val" id="ab-location">Not set</div></div>
+        <div class="about-card"><div class="about-card-label">🐦 Twitter</div><div class="about-card-val" id="ab-twitter">Not set</div></div>
+        <div class="about-card"><div class="about-card-label">💻 GitHub</div><div class="about-card-val" id="ab-github">Not set</div></div>
+        <div class="about-card"><div class="about-card-label">📅 Joined</div><div class="about-card-val" id="ab-joined">—</div></div>
+        <div class="about-card"><div class="about-card-label">🌐 Website</div><div class="about-card-val" id="ab-website" style="color:var(--brand);cursor:pointer">Not set</div></div>
+        <div class="about-card"><div class="about-card-label">📬 Email</div><div class="about-card-val" id="ab-email">—</div></div>
       </div>
-      <div class="about-card" style="margin-bottom:14px"><div class="about-card-label">🧠 Skills</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"><span class="skill-tag">React</span><span class="skill-tag">Next.js</span><span class="skill-tag">TypeScript</span><span class="skill-tag">Node.js</span><span class="skill-tag">PostgreSQL</span><span class="skill-tag">Docker</span><span class="skill-tag">AI/LLMs</span><span class="skill-tag">Product Design</span><span class="skill-tag">Figma</span></div></div>
-      <div class="about-card"><div class="about-card-label">🏆 Achievements</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🥇</span><div><div style="font-size:13px;font-weight:600">Top Creator</div><div style="font-size:11px;color:var(--text3)">Earned July 2025</div></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🔥</span><div><div style="font-size:13px;font-weight:600">7-Day Streak</div><div style="font-size:11px;color:var(--text3)">Active since July 6</div></div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:18px">🌟</span><div><div style="font-size:13px;font-weight:600">10k Impressions</div><div style="font-size:11px;color:var(--text3)">Single post milestone</div></div></div></div></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1906,11 +1808,11 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
         </div>
         <div style="display:flex;align-items:center;gap:16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px">
           <div class="avatar online" style="width:60px;height:60px;font-size:20px">JD</div>
-          <div><div style="font-size:15px;font-weight:700">Jordan Dev</div><div style="font-size:13px;color:var(--text2)">@jordandev</div></div>
+          <div><div style="font-size:15px;font-weight:700">Edit your profile from the Profile page</div><div style="font-size:13px;color:var(--text2)">Click the ✏️ Edit Profile button there</div></div>
           <button class="btn-outline btn-sm" style="margin-left:auto" onclick="showToast('📷','Change photo')">Change Photo</button>
         </div>
         <div class="settings-group">
-          <div class="settings-row"><div class="settings-row-info"><div class="s-label">Display Name</div><div class="s-sub">Jordan Dev</div></div><div class="settings-row-control"><button class="btn-ghost btn-sm" onclick="showToast('✏','Edit display name')">Edit</button></div></div>
+          <div class="settings-row"><div class="settings-row-info"><div class="s-label">Display Name</div><div class="s-sub">Managed from your Profile page</div></div><div class="settings-row-control"><button class="btn-ghost btn-sm" onclick="showToast('✏','Edit display name')">Edit</button></div></div>
           <div class="settings-row"><div class="settings-row-info"><div class="s-label">Username</div><div class="s-sub">@jordandev</div></div><div class="settings-row-control"><button class="btn-ghost btn-sm" onclick="showToast('✏','Edit username')">Edit</button></div></div>
           <div class="settings-row"><div class="settings-row-info"><div class="s-label">Email</div><div class="s-sub">jordan@dev.io</div></div><div class="settings-row-control"><button class="btn-ghost btn-sm" onclick="showToast('✏','Edit email')">Edit</button></div></div>
           <div class="settings-row"><div class="settings-row-info"><div class="s-label">Bio</div><div class="s-sub">Building the future of social tech...</div></div><div class="settings-row-control"><button class="btn-ghost btn-sm" onclick="showToast('✏','Edit bio')">Edit</button></div></div>
@@ -2462,6 +2364,68 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   </div>
 </div>
 
+<div class="modal-overlay" id="editProfileModal" onclick="if(event.target===this)closeEditProfile()">
+  <div class="modal" style="width:520px">
+    <div class="modal-header">
+      <div class="modal-title">✏️ Edit Your Profile</div>
+      <div class="modal-close" onclick="closeEditProfile()">×</div>
+    </div>
+    <div id="editProfileAlert" style="display:none;padding:11px 14px;border-radius:12px;font-size:13px;font-weight:500;margin-bottom:14px"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;max-height:65vh;overflow-y:auto;padding-right:4px">
+
+      <div style="text-align:center">
+        <div id="editAvatarPreview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;margin:0 auto 10px;font-family:'Plus Jakarta Sans',sans-serif">JD</div>
+        <div style="display:flex;gap:8px;justify-content:center" id="avatarColorPicker">
+          <div class="ep-color-swatch" data-color="indigo" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);cursor:pointer;border:2px solid transparent"></div>
+          <div class="ep-color-swatch" data-color="honey" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#f97316);cursor:pointer;border:2px solid transparent"></div>
+          <div class="ep-color-swatch" data-color="teal" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#06b6d4,#0891b2);cursor:pointer;border:2px solid transparent"></div>
+          <div class="ep-color-swatch" data-color="rose" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f43f5e,#e11d48);cursor:pointer;border:2px solid transparent"></div>
+          <div class="ep-color-swatch" data-color="green" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);cursor:pointer;border:2px solid transparent"></div>
+          <div class="ep-color-swatch" data-color="purple" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#9333ea);cursor:pointer;border:2px solid transparent"></div>
+        </div>
+      </div>
+
+      <div>
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="editFullName" placeholder="Your name">
+      </div>
+      <div>
+        <label class="form-label">Username</label>
+        <input class="form-input" id="editUsername" placeholder="username" oninput="this.value=this.value.replace(/[^a-zA-Z0-9_]/g,'').toLowerCase()">
+      </div>
+      <div>
+        <label class="form-label">Bio</label>
+        <input class="form-input" id="editBio" placeholder="Tell people about yourself">
+      </div>
+      <div>
+        <label class="form-label">Location</label>
+        <input class="form-input" id="editLocation" placeholder="City, Country">
+      </div>
+      <div>
+        <label class="form-label">Website</label>
+        <input class="form-input" id="editWebsite" placeholder="yourwebsite.com">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="form-label">Twitter</label>
+          <input class="form-input" id="editTwitter" placeholder="username">
+        </div>
+        <div>
+          <label class="form-label">GitHub</label>
+          <input class="form-input" id="editGithub" placeholder="username">
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:9px;justify-content:flex-end;padding-top:16px">
+      <button class="btn-outline" onclick="closeEditProfile()">Cancel</button>
+      <button class="btn-primary" id="saveProfileBtn" onclick="saveProfileEdit()">
+        <span id="saveProfileSpinner" style="display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top-color:white;border-radius:50%;animation:spin 0.7s linear infinite;margin-right:6px"></span>
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="musicModal" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal" style="width:520px">
     <div class="modal-header">
@@ -2498,7 +2462,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
 
 <div class="music-float" id="musicFloat">
   <div class="float-vinyl" id="floatVinyl"><div class="float-vinyl-center"></div></div>
-  <div class="float-info"><div class="float-label">🎵 Profile Music</div><div class="float-title" id="floatTitle">Track Title</div><div class="float-artist">Jordan Dev's Hive profile</div><div class="float-bar"><div class="float-bar-fill" id="floatProgress"></div></div></div>
+  <div class="float-info"><div class="float-label">🎵 Profile Music</div><div class="float-title" id="floatTitle">Track Title</div><div class="float-artist" id="floatArtist">Profile background music</div><div class="float-bar"><div class="float-bar-fill" id="floatProgress"></div></div></div>
   <div class="float-controls"><div class="float-mute" onclick="toggleMute()" id="floatMuteBtn">🔊</div><div class="float-play" onclick="togglePlay()" id="floatPlayBtn">▶</div></div>
   <div class="float-close" onclick="dismissFloat()">×</div>
 </div>
@@ -2548,14 +2512,25 @@ function toggleJoin(btn){
   if(btn.classList.contains('joined')){btn.textContent='Join';btn.classList.remove('joined');showToast('👋','Left community');}
   else{btn.textContent='✓ Joined';btn.classList.add('joined');showToast('⬡','Joined community!');}
 }
-function postToFeed(){
+async function postToFeed(){
   const inp=document.getElementById('homeCreateInput'),text=inp.value.trim();
   if(!text){showToast('⚠️','Write something first!');return;}
-  const c=document.createElement('div');c.className='post-card';
-  c.style.animation='modal-in .3s cubic-bezier(.34,1.56,.64,1)';
-  c.innerHTML=`<div class="post-header"><div class="avatar online">JD</div><div class="post-meta"><div class="post-author">Jordan Dev</div><div class="post-sub">@jordandev <span class="dot"></span> Just now <span class="dot"></span> 🌍 Public</div></div><span class="post-more" onclick="showToast('⋯','Post options')">⋯</span></div><div class="post-body">${text.replace(/</g,'&lt;').replace(/\n/g,'<br>')}</div><div class="post-actions"><div class="action-btn" onclick="toggleLike(this)">❤ <span>0</span></div><div class="action-btn" onclick="showToast('💬','Comments')">💬 <span>0</span></div><div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>0</span></div><div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div><div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div></div>`;
-  const feed=document.getElementById('feed');feed.insertBefore(c,feed.firstChild);
-  inp.value='';showToast('🎉','Post published to your feed!');
+  if(!currentUser||!supabaseClient){showToast('🔒','Please sign in to post!');return;}
+  const btn=document.querySelector('.btn-post');
+  if(btn)btn.disabled=true;
+  try{
+    const {error}=await supabaseClient.from('posts').insert({user_id:currentUser.id,content:text});
+    if(error)throw error;
+    inp.value='';
+    showToast('🎉','Post published to your feed!');
+    await loadFeedPosts();
+    await loadProfilePosts(currentUser.id);
+  }catch(err){
+    console.error('[Hive] postToFeed failed:',err);
+    showToast('⚠️',err.message||'Could not publish post.');
+  }finally{
+    if(btn)btn.disabled=false;
+  }
 }
 const chatData={
   mia:{name:'Mia Kovacs',color:'linear-gradient(135deg,#f43f5e,#fb923c)',init:'MK',status:'● Online'},
@@ -2768,25 +2743,264 @@ function hideAuthScreen(){
   if(s){s.style.opacity='0';s.style.transition='opacity 0.5s ease';setTimeout(()=>s.style.display='none',500);}
 }
 
+const AVATAR_GRADIENTS={
+  indigo:'linear-gradient(135deg,#6366f1,#4f46e5)',
+  honey:'linear-gradient(135deg,#f59e0b,#f97316)',
+  teal:'linear-gradient(135deg,#06b6d4,#0891b2)',
+  rose:'linear-gradient(135deg,#f43f5e,#e11d48)',
+  green:'linear-gradient(135deg,#10b981,#059669)',
+  purple:'linear-gradient(135deg,#a855f7,#9333ea)'
+};
+let currentProfile=null;
+
 function updateSidebarUser(user){
+  // Lightweight immediate update from auth metadata (before full profile loads)
   const meta=user.user_metadata||{};
   const name=meta.full_name||meta.name||user.email.split('@')[0]||'User';
-  const username=meta.username||('@'+name.toLowerCase().replace(/\s+/g,''));
+  const username=meta.username||name.toLowerCase().replace(/\s+/g,'');
   const initials=name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)||'ME';
-  // Update sidebar profile mini
   const pn=document.querySelector('.profile-name');
   const ph=document.querySelector('.profile-handle');
   const av=document.querySelector('.profile-mini .avatar');
   if(pn)pn.textContent=name;
-  if(ph)ph.textContent=username;
+  if(ph)ph.textContent='@'+username;
   if(av)av.textContent=initials;
-  // Update profile page
-  const pname=document.querySelector('.pname');
-  const phandle=document.querySelector('.phandle');
-  const pavatar=document.querySelector('.profile-avatar-lg');
-  if(pname)pname.textContent=name+' ✦';
-  if(phandle)phandle.textContent=(username.startsWith('@')?username:'@'+username)+' · Member';
-  if(pavatar){const span=pavatar.querySelector('.online-ring');pavatar.textContent=initials;if(span)pavatar.appendChild(span);}
+  // Kick off full profile load from DB (authoritative data)
+  loadUserProfile(user);
+}
+
+/* ══════════ LOAD REAL PROFILE FROM SUPABASE ══════════ */
+async function loadUserProfile(user){
+  if(!supabaseClient||!user)return;
+  try{
+    let {data:profile,error}=await supabaseClient.from('profiles').select('*').eq('id',user.id).single();
+
+    // Auto-provision a profile row if missing (e.g. first-time OAuth login)
+    if(!profile){
+      const meta=user.user_metadata||{};
+      const fallbackName=meta.full_name||meta.name||user.email.split('@')[0];
+      const fallbackUsername=(meta.username||fallbackName).toLowerCase().replace(/[^a-z0-9_]/g,'').slice(0,20)||('user'+Date.now());
+      const insertRes=await supabaseClient.from('profiles').upsert({
+        id:user.id,
+        full_name:fallbackName,
+        username:fallbackUsername,
+        email:user.email,
+        avatar_initials:fallbackName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2)||'ME',
+        avatar_color:'indigo',
+        created_at:new Date().toISOString()
+      }).select().single();
+      profile=insertRes.data;
+    }
+
+    currentProfile=profile;
+    renderProfile(profile);
+    loadFeedPosts();
+    loadProfilePosts(user.id);
+  }catch(e){
+    console.error('[Hive] loadUserProfile failed:',e);
+  }
+}
+
+function renderProfile(p){
+  if(!p)return;
+  const name=p.full_name||'Your Name';
+  const username=p.username||'user';
+  const initials=p.avatar_initials||(name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2))||'ME';
+  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+
+  // Sidebar
+  const pn=document.querySelector('.profile-name'); if(pn)pn.textContent=name;
+  const ph=document.querySelector('.profile-handle'); if(ph)ph.textContent='@'+username;
+  const av=document.querySelector('.profile-mini .avatar');
+  if(av){av.textContent=initials;av.style.background=gradient;}
+
+  // Profile page header
+  const pfName=document.getElementById('pf-name'); if(pfName)pfName.textContent=name+' ✦';
+  const pfHandle=document.getElementById('pf-handle');
+  if(pfHandle)pfHandle.textContent='@'+username+(p.location?' · '+p.location:'');
+  const pfBio=document.getElementById('pf-bio');
+  if(pfBio)pfBio.textContent=p.bio||'Tell the community about yourself — click Edit Profile to add a bio.';
+  const pfAvatar=document.getElementById('pf-avatar');
+  if(pfAvatar){
+    const ring=pfAvatar.querySelector('.online-ring');
+    pfAvatar.textContent=initials;
+    pfAvatar.style.background=gradient;
+    if(ring)pfAvatar.appendChild(ring);
+  }
+
+  // Links row
+  const linksWrap=document.getElementById('pf-links');
+  const wsEl=document.getElementById('pf-link-website');
+  const twEl=document.getElementById('pf-link-twitter');
+  const ghEl=document.getElementById('pf-link-github');
+  let anyLink=false;
+  if(p.website){wsEl.style.display='inline-flex';wsEl.querySelector('span').textContent=p.website;wsEl.onclick=()=>window.open(/^https?:\/\//.test(p.website)?p.website:'https://'+p.website,'_blank');anyLink=true;}else if(wsEl)wsEl.style.display='none';
+  if(p.twitter){twEl.style.display='inline-flex';twEl.querySelector('span').textContent='@'+p.twitter.replace('@','');twEl.onclick=()=>window.open('https://twitter.com/'+p.twitter.replace('@',''),'_blank');anyLink=true;}else if(twEl)twEl.style.display='none';
+  if(p.github){ghEl.style.display='inline-flex';ghEl.querySelector('span').textContent=p.github;ghEl.onclick=()=>window.open('https://github.com/'+p.github,'_blank');anyLink=true;}else if(ghEl)ghEl.style.display='none';
+  if(linksWrap)linksWrap.style.display=anyLink?'flex':'none';
+
+  // About tab
+  const abLoc=document.getElementById('ab-location'); if(abLoc)abLoc.textContent=p.location||'Not set';
+  const abTw=document.getElementById('ab-twitter'); if(abTw)abTw.textContent=p.twitter?'@'+p.twitter.replace('@',''):'Not set';
+  const abGh=document.getElementById('ab-github'); if(abGh)abGh.textContent=p.github||'Not set';
+  const abWeb=document.getElementById('ab-website'); if(abWeb)abWeb.textContent=p.website||'Not set';
+  const abEmail=document.getElementById('ab-email'); if(abEmail)abEmail.textContent=p.email||'—';
+  const abJoined=document.getElementById('ab-joined');
+  if(abJoined&&p.created_at)abJoined.textContent=new Date(p.created_at).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+}
+
+/* ══════════ EDIT PROFILE MODAL ══════════ */
+function openEditProfile(){
+  if(!currentProfile){showToast('⏳','Profile still loading, one sec...');return;}
+  document.getElementById('editFullName').value=currentProfile.full_name||'';
+  document.getElementById('editUsername').value=currentProfile.username||'';
+  document.getElementById('editBio').value=currentProfile.bio||'';
+  document.getElementById('editLocation').value=currentProfile.location||'';
+  document.getElementById('editWebsite').value=currentProfile.website||'';
+  document.getElementById('editTwitter').value=currentProfile.twitter||'';
+  document.getElementById('editGithub').value=currentProfile.github||'';
+  selectAvatarColor(currentProfile.avatar_color||'indigo',false);
+  document.getElementById('editProfileModal').classList.add('open');
+}
+function closeEditProfile(){document.getElementById('editProfileModal').classList.remove('open');}
+
+function selectAvatarColor(color,updatePreviewText){
+  document.querySelectorAll('.ep-color-swatch').forEach(s=>{
+    s.style.border=s.dataset.color===color?'2px solid #1e1b4b':'2px solid transparent';
+  });
+  const preview=document.getElementById('editAvatarPreview');
+  preview.style.background=AVATAR_GRADIENTS[color]||AVATAR_GRADIENTS.indigo;
+  preview.dataset.selectedColor=color;
+  if(updatePreviewText!==false){
+    const fn=document.getElementById('editFullName').value.trim();
+    preview.textContent=fn?fn.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):'ME';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.ep-color-swatch').forEach(sw=>{
+    sw.addEventListener('click',()=>selectAvatarColor(sw.dataset.color));
+  });
+  const efn=document.getElementById('editFullName');
+  if(efn)efn.addEventListener('input',()=>{
+    const preview=document.getElementById('editAvatarPreview');
+    const fn=efn.value.trim();
+    preview.textContent=fn?fn.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):'ME';
+  });
+});
+
+async function saveProfileEdit(){
+  if(!currentUser||!supabaseClient)return;
+  const alertEl=document.getElementById('editProfileAlert');
+  alertEl.style.display='none';
+  const fullName=document.getElementById('editFullName').value.trim();
+  const username=document.getElementById('editUsername').value.trim();
+  const bio=document.getElementById('editBio').value.trim();
+  const location=document.getElementById('editLocation').value.trim();
+  const website=document.getElementById('editWebsite').value.trim();
+  const twitter=document.getElementById('editTwitter').value.trim().replace('@','');
+  const github=document.getElementById('editGithub').value.trim();
+  const avatarColor=document.getElementById('editAvatarPreview').dataset.selectedColor||'indigo';
+
+  if(!fullName||!username){
+    alertEl.textContent='Name and username are required.';
+    alertEl.style.display='block';
+    alertEl.style.background='rgba(244,63,94,0.08)';alertEl.style.color='#e11d48';
+    return;
+  }
+
+  const btn=document.getElementById('saveProfileBtn');
+  const sp=document.getElementById('saveProfileSpinner');
+  btn.disabled=true;sp.style.display='inline-block';
+
+  try{
+    const initials=fullName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+    const {data,error}=await supabaseClient.from('profiles').update({
+      full_name:fullName,username,bio:bio||null,location:location||null,
+      website:website||null,twitter:twitter||null,github:github||null,
+      avatar_initials:initials,avatar_color:avatarColor
+    }).eq('id',currentUser.id).select().single();
+    if(error)throw error;
+    currentProfile=data;
+    renderProfile(data);
+    closeEditProfile();
+    showToast('✅','Profile updated!');
+  }catch(err){
+    alertEl.textContent=err.message||'Could not save changes.';
+    alertEl.style.display='block';
+    alertEl.style.background='rgba(244,63,94,0.08)';alertEl.style.color='#e11d48';
+  }finally{
+    btn.disabled=false;sp.style.display='none';
+  }
+}
+
+/* ══════════ REAL POSTS: LOAD + RENDER ══════════ */
+function timeAgo(dateStr){
+  const diff=(Date.now()-new Date(dateStr).getTime())/1000;
+  if(diff<60)return 'Just now';
+  if(diff<3600)return Math.floor(diff/60)+'m ago';
+  if(diff<86400)return Math.floor(diff/3600)+'h ago';
+  return Math.floor(diff/86400)+'d ago';
+}
+function escapeHtml(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function buildPostCardHTML(post,author){
+  const name=author?.full_name||'Hive Member';
+  const username=author?.username||'member';
+  const initials=author?.avatar_initials||'HM';
+  const gradient=AVATAR_GRADIENTS[author?.avatar_color]||AVATAR_GRADIENTS.indigo;
+  return `<div class="post-card">
+    <div class="post-header">
+      <div class="avatar" style="background:${gradient}">${initials}</div>
+      <div class="post-meta"><div class="post-author">${escapeHtml(name)}</div><div class="post-sub">@${escapeHtml(username)} <span class="dot"></span> ${timeAgo(post.created_at)}</div></div>
+      <span class="post-more" onclick="showToast('⋯','Post options')">⋯</span>
+    </div>
+    <div class="post-body">${escapeHtml(post.content).replace(/\n/g,'<br>')}</div>
+    <div class="post-actions">
+      <div class="action-btn" onclick="toggleLike(this)">❤ <span>0</span></div>
+      <div class="action-btn" onclick="openComments('${escapeHtml(name)}')">💬 <span>0</span></div>
+      <div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>0</span></div>
+      <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
+      <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
+    </div>
+  </div>`;
+}
+
+async function loadFeedPosts(){
+  if(!supabaseClient)return;
+  try{
+    const {data,error}=await supabaseClient.from('posts').select('*, profiles(*)').order('created_at',{ascending:false}).limit(50);
+    if(error)throw error;
+    const feed=document.getElementById('feed');
+    const empty=document.getElementById('feedEmptyState');
+    if(!data||data.length===0){
+      if(empty)empty.style.display='block';
+      Array.from(feed.querySelectorAll('.post-card')).forEach(el=>el.remove());
+      return;
+    }
+    if(empty)empty.style.display='none';
+    Array.from(feed.querySelectorAll('.post-card')).forEach(el=>el.remove());
+    feed.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles)).join(''));
+  }catch(e){console.error('[Hive] loadFeedPosts failed:',e);}
+}
+
+async function loadProfilePosts(userId){
+  if(!supabaseClient||!userId)return;
+  try{
+    const {data,error}=await supabaseClient.from('posts').select('*, profiles(*)').eq('user_id',userId).order('created_at',{ascending:false});
+    if(error)throw error;
+    const wrap=document.getElementById('profileFeed');
+    const empty=document.getElementById('profileEmptyState');
+    const countEl=document.getElementById('pf-stat-posts');
+    if(countEl)countEl.textContent=data?data.length:0;
+    if(!data||data.length===0){
+      if(empty)empty.style.display='block';
+      Array.from(wrap.querySelectorAll('.post-card')).forEach(el=>el.remove());
+      return;
+    }
+    if(empty)empty.style.display='none';
+    Array.from(wrap.querySelectorAll('.post-card')).forEach(el=>el.remove());
+    wrap.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles)).join(''));
+  }catch(e){console.error('[Hive] loadProfilePosts failed:',e);}
 }
 
 /* ── TAB SWITCH ── */
@@ -2853,74 +3067,6 @@ function enterPlatform(){
 }
 
 
-/* ══════════ DEMO ACCOUNT LOGIN ══════════ */
-const DEMO_EMAIL = 'demo@hiveapp.io';
-const DEMO_PASSWORD = 'HiveDemo2025!';
-
-async function tryDemoLogin(){
-  clearAuthAlert();
-  if(!supabaseClient){showAuthAlert('Connecting to server, please wait...');return;}
-  const btn=document.getElementById('demoBtn');
-  const sp=document.getElementById('demoSpinner');
-  if(btn)btn.disabled=true;
-  if(sp)sp.style.display='inline-block';
-
-  try{
-    // 1. Try signing in with demo credentials first
-    let {data,error}=await supabaseClient.auth.signInWithPassword({email:DEMO_EMAIL,password:DEMO_PASSWORD});
-
-    // 2. If demo account doesn't exist yet, create it on the fly
-    if(error && (error.message.toLowerCase().includes('invalid') || error.message.toLowerCase().includes('credentials'))){
-      showAuthAlert('Setting up demo account for the first time…','success');
-      const signup=await supabaseClient.auth.signUp({
-        email:DEMO_EMAIL,
-        password:DEMO_PASSWORD,
-        options:{data:{
-          full_name:'Demo User',
-          username:'hivedemo',
-          bio:'Just exploring Hive! 🐝 This is a shared public demo account.',
-          avatar_initials:'DU'
-        }}
-      });
-      if(signup.error) throw signup.error;
-
-      // Create profile row if we have a session already (no email confirm required)
-      if(signup.data.user){
-        await supabaseClient.from('profiles').upsert({
-          id:signup.data.user.id,
-          full_name:'Demo User',
-          username:'hivedemo',
-          bio:'Just exploring Hive! 🐝 This is a shared public demo account.',
-          email:DEMO_EMAIL,
-          avatar_initials:'DU',
-          created_at:new Date().toISOString()
-        });
-      }
-
-      if(signup.data.session){
-        data=signup.data;
-        error=null;
-      } else {
-        // Email confirmation is required on this project — can't auto-login
-        showAuthAlert('Demo account created! If email confirmation is ON in your Supabase project, please turn it OFF (Authentication → Settings) so the demo can log straight in.','error');
-        return;
-      }
-    }
-
-    if(error) throw error;
-
-    currentUser=data.user;
-    updateSidebarUser(data.user);
-    showAuthAlert('Welcome to the Hive demo! 🐝','success');
-    setTimeout(()=>enterPlatform(),900);
-
-  }catch(err){
-    showAuthAlert(err.message||'Could not start demo session. Please try again.');
-  }finally{
-    if(btn)btn.disabled=false;
-    if(sp)sp.style.display='none';
-  }
-}
 
 /* ══════════ LOGIN ══════════ */
 async function submitLogin(){
@@ -3038,13 +3184,23 @@ async function logoutUser(){
   if(!supabaseClient)return;
   await supabaseClient.auth.signOut();
   currentUser=null;
-  // Reset sidebar
+  currentProfile=null;
+  // Reset sidebar to generic placeholder
   const pn=document.querySelector('.profile-name');
   const ph=document.querySelector('.profile-handle');
   const av=document.querySelector('.profile-mini .avatar');
-  if(pn)pn.textContent='Jordan Dev';
-  if(ph)ph.textContent='@jordandev';
-  if(av)av.textContent='JD';
+  if(pn)pn.textContent='Guest';
+  if(ph)ph.textContent='@guest';
+  if(av){av.textContent='ME';av.style.background='';}
+  // Clear feed and profile posts back to empty state
+  const feed=document.getElementById('feed');
+  if(feed)Array.from(feed.querySelectorAll('.post-card')).forEach(el=>el.remove());
+  const feedEmpty=document.getElementById('feedEmptyState');
+  if(feedEmpty)feedEmpty.style.display='block';
+  const pFeed=document.getElementById('profileFeed');
+  if(pFeed)Array.from(pFeed.querySelectorAll('.post-card')).forEach(el=>el.remove());
+  const pEmpty=document.getElementById('profileEmptyState');
+  if(pEmpty)pEmpty.style.display='block';
   // Show auth screen
   const s=document.getElementById('authScreen');
   if(s){

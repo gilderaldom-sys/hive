@@ -1479,16 +1479,22 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   </div>
   <div class="create-post">
     <div class="create-row">
-      <div class="avatar online">JD</div>
-      <textarea class="create-input" id="homeCreateInput" placeholder="What's on your mind, Jordan?"></textarea>
+      <div class="avatar online" id="createBoxAvatar">ME</div>
+      <textarea class="create-input" id="homeCreateInput" placeholder="What's on your mind?"></textarea>
     </div>
+    <div id="createMediaPreview" style="display:none;position:relative;margin:0 0 12px 52px;border-radius:var(--radius-sm);overflow:hidden;max-width:320px">
+      <img id="createMediaImg" style="display:none;width:100%;max-height:260px;object-fit:cover" alt="">
+      <video id="createMediaVid" style="display:none;width:100%;max-height:260px" controls></video>
+      <div onclick="clearCreateMedia()" style="position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,0.6);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px">×</div>
+    </div>
+    <input type="file" id="createMediaInput" accept="image/*,video/*" style="display:none" onchange="handleMediaSelect(event)">
     <div class="create-actions">
-      <div class="create-tool" onclick="showToast('📷','Photo upload')">📷 Photo</div>
-      <div class="create-tool" onclick="showToast('🎬','Video upload')">🎬 Video</div>
-      <div class="create-tool" onclick="showToast('📊','Poll creator')">📊 Poll</div>
+      <div class="create-tool" onclick="triggerMediaPicker('image')">📷 Photo</div>
+      <div class="create-tool" onclick="triggerMediaPicker('video')">🎬 Video</div>
+      <div class="create-tool" onclick="showToast('📊','Poll creator coming soon!')">📊 Poll</div>
       <div class="create-tool" onclick="openAI()">✦ AI Write</div>
-      <div class="create-tool" onclick="showToast('📍','Location')">📍 Place</div>
-      <button class="btn-post" onclick="postToFeed()">Publish</button>
+      <div class="create-tool" onclick="showToast('📍','Location coming soon!')">📍 Place</div>
+      <button class="btn-post" id="publishBtn" onclick="postToFeed()">Publish</button>
     </div>
   </div>
   <div class="ai-widget">
@@ -2267,7 +2273,10 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div style="display:flex;flex-direction:column;gap:14px;max-height:65vh;overflow-y:auto;padding-right:4px">
 
       <div style="text-align:center">
-        <div id="editAvatarPreview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;margin:0 auto 10px;font-family:'Plus Jakarta Sans',sans-serif">JD</div>
+        <div id="editAvatarPreview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;margin:0 auto 10px;font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden">JD</div>
+        <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarSelect(event)">
+        <button type="button" class="btn-outline btn-sm" onclick="document.getElementById('avatarFileInput').click()" style="margin-bottom:12px">📷 Change Photo</button>
+        <div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">Or pick a color avatar instead</div>
         <div style="display:flex;gap:8px;justify-content:center" id="avatarColorPicker">
           <div class="ep-color-swatch" data-color="indigo" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);cursor:pointer;border:2px solid transparent"></div>
           <div class="ep-color-swatch" data-color="honey" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#f97316);cursor:pointer;border:2px solid transparent"></div>
@@ -2446,10 +2455,8 @@ function closeComments(){
 function buildCommentHTML(c){
   const p=c.profiles||{};
   const name=p.full_name||'Hive Member';
-  const initials=p.avatar_initials||'HM';
-  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
   return `<div class="comment-item">
-    <div class="avatar" style="width:32px;height:32px;font-size:11px;background:${gradient};flex-shrink:0">${initials}</div>
+    ${personAvatarHTML(p,32)}
     <div class="comment-body">
       <div class="comment-author">${escapeHtml(name)}</div>
       <div class="comment-text">${escapeHtml(c.content)}</div>
@@ -2463,7 +2470,7 @@ async function loadComments(postId){
   if(!supabaseClient){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Comments unavailable right now.</div>';return;}
   list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Loading comments…</div>';
   try{
-    const {data,error}=await supabaseClient.from('comments').select('*, profiles(*)').eq('post_id',postId).order('created_at',{ascending:true});
+    const {data,error}=await supabaseClient.from('comments').select('*, profiles!comments_user_id_fkey(*)').eq('post_id',postId).order('created_at',{ascending:true});
     if(error)throw error;
     if(!data||data.length===0){
       list.innerHTML='<div style="padding:30px 20px;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:8px">💬</div><div style="font-size:13px">No comments yet — be the first to reply!</div></div>';
@@ -2583,16 +2590,79 @@ function toggleJoin(btn){
   if(btn.classList.contains('joined')){btn.textContent='Join';btn.classList.remove('joined');showToast('👋','Left community');}
   else{btn.textContent='✓ Joined';btn.classList.add('joined');showToast('⬡','Joined community!');}
 }
+/* ══════════ POST MEDIA (PHOTO/VIDEO) ══════════ */
+let selectedMediaFile=null;
+let selectedMediaType=null;
+
+function triggerMediaPicker(type){
+  const input=document.getElementById('createMediaInput');
+  input.accept=type==='video'?'video/*':'image/*';
+  input.dataset.kind=type;
+  input.click();
+}
+
+function handleMediaSelect(event){
+  const file=event.target.files[0];
+  if(!file)return;
+  const kind=event.target.dataset.kind||(file.type.startsWith('video')?'video':'image');
+  const maxMB=kind==='video'?50:10;
+  if(file.size>maxMB*1024*1024){
+    showToast('⚠️',`File too large — max ${maxMB}MB for ${kind}s.`);
+    event.target.value='';
+    return;
+  }
+  selectedMediaFile=file;
+  selectedMediaType=kind;
+  const url=URL.createObjectURL(file);
+  const wrap=document.getElementById('createMediaPreview');
+  const img=document.getElementById('createMediaImg');
+  const vid=document.getElementById('createMediaVid');
+  if(kind==='video'){
+    vid.src=url;vid.style.display='block';img.style.display='none';
+  }else{
+    img.src=url;img.style.display='block';vid.style.display='none';vid.removeAttribute('src');
+  }
+  wrap.style.display='block';
+}
+
+function clearCreateMedia(){
+  selectedMediaFile=null;selectedMediaType=null;
+  document.getElementById('createMediaPreview').style.display='none';
+  document.getElementById('createMediaInput').value='';
+  const img=document.getElementById('createMediaImg'),vid=document.getElementById('createMediaVid');
+  img.style.display='none';vid.style.display='none';vid.removeAttribute('src');
+}
+
+async function uploadPostMedia(file,userId){
+  const ext=(file.name.split('.').pop()||'bin').toLowerCase();
+  const path=`${userId}/${Date.now()}.${ext}`;
+  const {error}=await supabaseClient.storage.from('post-media').upload(path,file,{upsert:false});
+  if(error)throw error;
+  const {data}=supabaseClient.storage.from('post-media').getPublicUrl(path);
+  return data.publicUrl;
+}
+
 async function postToFeed(){
   const inp=document.getElementById('homeCreateInput'),text=inp.value.trim();
-  if(!text){showToast('⚠️','Write something first!');return;}
+  if(!text&&!selectedMediaFile){showToast('⚠️','Write something or add a photo/video!');return;}
   if(!currentUser||!supabaseClient){showToast('🔒','Please sign in to post!');return;}
-  const btn=document.querySelector('.btn-post');
-  if(btn)btn.disabled=true;
+  const btn=document.getElementById('publishBtn');
+  if(btn){btn.disabled=true;btn.textContent='Publishing…';}
   try{
-    const {error}=await supabaseClient.from('posts').insert({user_id:currentUser.id,content:text});
+    let mediaUrl=null,mediaType=null;
+    if(selectedMediaFile){
+      mediaUrl=await uploadPostMedia(selectedMediaFile,currentUser.id);
+      mediaType=selectedMediaType;
+    }
+    const {error}=await supabaseClient.from('posts').insert({
+      user_id:currentUser.id,
+      content:text||'',
+      media_url:mediaUrl,
+      media_type:mediaType
+    });
     if(error)throw error;
     inp.value='';
+    clearCreateMedia();
     showToast('🎉','Post published to your feed!');
     await loadFeedPosts();
     await loadProfilePosts(currentUser.id);
@@ -2600,7 +2670,7 @@ async function postToFeed(){
     console.error('[Hive] postToFeed failed:',err);
     showToast('⚠️',err.message||'Could not publish post.');
   }finally{
-    if(btn)btn.disabled=false;
+    if(btn){btn.disabled=false;btn.textContent='Publish';}
   }
 }
 const chatData={
@@ -2873,6 +2943,17 @@ async function loadUserProfile(user){
   }
 }
 
+function applyAvatarToEl(el,p,initials,gradient){
+  if(!el)return;
+  if(p.avatar_url){
+    el.style.background=`center/cover no-repeat url('${p.avatar_url}')`;
+    el.textContent='';
+  }else{
+    el.style.background=gradient;
+    el.textContent=initials;
+  }
+}
+
 function renderProfile(p){
   if(!p)return;
   const name=p.full_name||'Your Name';
@@ -2884,7 +2965,10 @@ function renderProfile(p){
   const pn=document.querySelector('.profile-name'); if(pn)pn.textContent=name;
   const ph=document.querySelector('.profile-handle'); if(ph)ph.textContent='@'+username;
   const av=document.querySelector('.profile-mini .avatar');
-  if(av){av.textContent=initials;av.style.background=gradient;}
+  applyAvatarToEl(av,p,initials,gradient);
+
+  // Create-post box avatar
+  applyAvatarToEl(document.getElementById('createBoxAvatar'),p,initials,gradient);
 
   // Profile page header
   const pfName=document.getElementById('pf-name'); if(pfName)pfName.textContent=name+' ✦';
@@ -2895,8 +2979,7 @@ function renderProfile(p){
   const pfAvatar=document.getElementById('pf-avatar');
   if(pfAvatar){
     const ring=pfAvatar.querySelector('.online-ring');
-    pfAvatar.textContent=initials;
-    pfAvatar.style.background=gradient;
+    applyAvatarToEl(pfAvatar,p,initials,gradient);
     if(ring)pfAvatar.appendChild(ring);
   }
 
@@ -2922,8 +3005,11 @@ function renderProfile(p){
 }
 
 /* ══════════ EDIT PROFILE MODAL ══════════ */
+let pendingAvatarUrl=undefined; // undefined = no change, null = reverted to color, string = new upload
+
 function openEditProfile(){
   if(!currentProfile){showToast('⏳','Profile still loading, one sec...');return;}
+  pendingAvatarUrl=undefined;
   document.getElementById('editFullName').value=currentProfile.full_name||'';
   document.getElementById('editUsername').value=currentProfile.username||'';
   document.getElementById('editBio').value=currentProfile.bio||'';
@@ -2932,6 +3018,13 @@ function openEditProfile(){
   document.getElementById('editTwitter').value=currentProfile.twitter||'';
   document.getElementById('editGithub').value=currentProfile.github||'';
   selectAvatarColor(currentProfile.avatar_color||'indigo',false);
+  const preview=document.getElementById('editAvatarPreview');
+  if(currentProfile.avatar_url){
+    preview.style.background='transparent';
+    preview.innerHTML=`<img src="${currentProfile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  }else{
+    preview.innerHTML=(currentProfile.avatar_initials||'ME');
+  }
   document.getElementById('editProfileModal').classList.add('open');
 }
 function closeEditProfile(){document.getElementById('editProfileModal').classList.remove('open');}
@@ -2944,8 +3037,34 @@ function selectAvatarColor(color,updatePreviewText){
   preview.style.background=AVATAR_GRADIENTS[color]||AVATAR_GRADIENTS.indigo;
   preview.dataset.selectedColor=color;
   if(updatePreviewText!==false){
+    // User explicitly picked a color -> revert away from any uploaded photo
+    pendingAvatarUrl=null;
     const fn=document.getElementById('editFullName').value.trim();
     preview.textContent=fn?fn.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2):'ME';
+  }
+}
+
+async function handleAvatarSelect(event){
+  const file=event.target.files[0];
+  if(!file||!currentUser||!supabaseClient)return;
+  if(file.size>5*1024*1024){showToast('⚠️','Image too large — max 5MB.');event.target.value='';return;}
+  const preview=document.getElementById('editAvatarPreview');
+  const prevContent=preview.innerHTML;
+  preview.innerHTML='<div style="font-size:11px">Uploading…</div>';
+  try{
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
+    const {error}=await supabaseClient.storage.from('avatars').upload(path,file,{upsert:true});
+    if(error)throw error;
+    const {data}=supabaseClient.storage.from('avatars').getPublicUrl(path);
+    pendingAvatarUrl=data.publicUrl;
+    preview.style.background='transparent';
+    preview.innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    showToast('📷','Photo ready — click Save Changes to apply');
+  }catch(err){
+    console.error('[Hive] handleAvatarSelect failed:',err);
+    showToast('⚠️',err.message||'Could not upload photo.');
+    preview.innerHTML=prevContent;
   }
 }
 document.addEventListener('DOMContentLoaded',function(){
@@ -2986,13 +3105,17 @@ async function saveProfileEdit(){
 
   try{
     const initials=fullName.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
-    const {data,error}=await supabaseClient.from('profiles').update({
+    const updatePayload={
       full_name:fullName,username,bio:bio||null,location:location||null,
       website:website||null,twitter:twitter||null,github:github||null,
       avatar_initials:initials,avatar_color:avatarColor
-    }).eq('id',currentUser.id).select().single();
+    };
+    // Only touch avatar_url if the user changed it this session
+    if(pendingAvatarUrl!==undefined)updatePayload.avatar_url=pendingAvatarUrl;
+    const {data,error}=await supabaseClient.from('profiles').update(updatePayload).eq('id',currentUser.id).select().single();
     if(error)throw error;
     currentProfile=data;
+    pendingAvatarUrl=undefined;
     renderProfile(data);
     closeEditProfile();
     showToast('✅','Profile updated!');
@@ -3019,18 +3142,25 @@ function buildPostCardHTML(post,author,engagement){
   engagement=engagement||{likeCounts:{},commentCounts:{},likedByMe:new Set()};
   const name=author?.full_name||'Hive Member';
   const username=author?.username||'member';
-  const initials=author?.avatar_initials||'HM';
-  const gradient=AVATAR_GRADIENTS[author?.avatar_color]||AVATAR_GRADIENTS.indigo;
   const likeCount=engagement.likeCounts[post.id]||0;
   const commentCount=engagement.commentCounts[post.id]||0;
   const isLiked=engagement.likedByMe.has(post.id);
+  let mediaHTML='';
+  if(post.media_url){
+    if(post.media_type==='video'){
+      mediaHTML=`<div class="post-image-grid"><video src="${post.media_url}" controls style="width:100%;max-height:420px;border-radius:var(--radius-sm);background:#000"></video></div>`;
+    }else{
+      mediaHTML=`<div class="post-image-grid"><img src="${post.media_url}" style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius-sm)" alt=""></div>`;
+    }
+  }
   return `<div class="post-card" data-post-id="${post.id}">
     <div class="post-header">
-      <div class="avatar" style="background:${gradient}">${initials}</div>
+      ${personAvatarHTML(author||{},40)}
       <div class="post-meta"><div class="post-author">${escapeHtml(name)}</div><div class="post-sub">@${escapeHtml(username)} <span class="dot"></span> ${timeAgo(post.created_at)}</div></div>
       <span class="post-more" onclick="showToast('⋯','Post options')">⋯</span>
     </div>
     <div class="post-body">${escapeHtml(post.content).replace(/\n/g,'<br>')}</div>
+    ${mediaHTML}
     <div class="post-actions">
       <div class="action-btn ${isLiked?'liked':''}" onclick="toggleLike('${post.id}',this)">❤ <span>${likeCount}</span></div>
       <div class="action-btn" onclick="openComments('${post.id}','${escapeHtml(name)}')">💬 <span id="cmt-count-${post.id}">${commentCount}</span></div>
@@ -3068,7 +3198,7 @@ async function fetchEngagementForPosts(postIds){
 async function loadFeedPosts(){
   if(!supabaseClient)return;
   try{
-    const {data,error}=await supabaseClient.from('posts').select('*, profiles(*)').order('created_at',{ascending:false}).limit(50);
+    const {data,error}=await supabaseClient.from('posts').select('*, profiles!posts_user_id_fkey(*)').order('created_at',{ascending:false}).limit(50);
     if(error)throw error;
     const feed=document.getElementById('feed');
     const empty=document.getElementById('feedEmptyState');
@@ -3087,7 +3217,7 @@ async function loadFeedPosts(){
 async function loadProfilePosts(userId){
   if(!supabaseClient||!userId)return;
   try{
-    const {data,error}=await supabaseClient.from('posts').select('*, profiles(*)').eq('user_id',userId).order('created_at',{ascending:false});
+    const {data,error}=await supabaseClient.from('posts').select('*, profiles!posts_user_id_fkey(*)').eq('user_id',userId).order('created_at',{ascending:false});
     if(error)throw error;
     const wrap=document.getElementById('profileFeed');
     const empty=document.getElementById('profileEmptyState');
@@ -3148,9 +3278,13 @@ async function toggleFollow(targetId,btnEl){
 }
 
 function personAvatarHTML(p,size){
+  const dim=size?('width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.36)+'px'):'';
+  if(p.avatar_url){
+    return `<div class="avatar" style="${dim};padding:0;overflow:hidden"><img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""></div>`;
+  }
   const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
-  return `<div class="avatar" style="background:${gradient};${size?('width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.36)+'px'):''}">${initials}</div>`;
+  return `<div class="avatar" style="background:${gradient};${dim}">${initials}</div>`;
 }
 
 function buildSidebarFollowItemHTML(p){

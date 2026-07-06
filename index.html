@@ -1400,7 +1400,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <a class="nav-item" onclick="showPage('explore',this)"><span class="nav-icon">◎</span> Explore</a>
   <a class="nav-item" onclick="openAI()"><span class="nav-icon">✦</span> AI Assistant<span class="nav-badge">New</span></a>
   <a class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">✉</span> Messages<span class="nav-badge red">5</span></a>
-  <a class="nav-item" onclick="showPage('notifications',this)"><span class="nav-icon">🔔</span> Notifications<span class="nav-badge">12</span></a>
+  <a class="nav-item" onclick="showPage('notifications',this)"><span class="nav-icon">🔔</span> Notifications<span class="nav-badge" id="notifBadge" style="display:none">0</span></a>
 
   <div class="nav-label">Discover</div>
   <a class="nav-item" onclick="showPage('communities',this)"><span class="nav-icon">⬡</span> Communities</a>
@@ -1532,8 +1532,8 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       </div>
       <div class="profile-stats">
         <div><div class="pstat-num" id="pf-stat-posts">0</div><div class="pstat-lbl">Posts</div></div>
-        <div><div class="pstat-num">0</div><div class="pstat-lbl">Followers</div></div>
-        <div><div class="pstat-num">0</div><div class="pstat-lbl">Following</div></div>
+        <div><div class="pstat-num" id="pf-stat-followers">0</div><div class="pstat-lbl">Followers</div></div>
+        <div><div class="pstat-num" id="pf-stat-following">0</div><div class="pstat-lbl">Following</div></div>
       </div>
     </div>
     <div class="profile-action-row">
@@ -1608,36 +1608,17 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <div class="messages-layout">
     <div class="msg-list">
       <div style="padding:12px 16px"><div class="search-bar" style="margin-bottom:0"><span style="color:var(--text3)">⌕</span><input placeholder="Search messages…"></div></div>
-      <div class="msg-item active" onclick="openChat(event,'mia')"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div><div class="msg-info"><div class="msg-name">Mia Kovacs</div><div class="msg-preview">Can we schedule a design review for Thursday?</div></div><div class="msg-meta"><div class="msg-time">2m</div><div class="msg-unread">3</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'alex')"><div class="avatar" style="background:linear-gradient(135deg,var(--hive-teal),var(--blue))">AT</div><div class="msg-info"><div class="msg-name">Alex Thompson</div><div class="msg-preview">Thanks for the API feedback! Let me know when you're free</div></div><div class="msg-meta"><div class="msg-time">1h</div><div class="msg-unread">1</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'kai')"><div class="avatar" style="background:linear-gradient(135deg,var(--purple),#ec4899)">KR</div><div class="msg-info"><div class="msg-name">Kai Reyes</div><div class="msg-preview">Would love to collab on the design system!</div></div><div class="msg-meta"><div class="msg-time">3h</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'sarah')"><div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">SM</div><div class="msg-info"><div class="msg-name">Sarah Mendez</div><div class="msg-preview">Check out these Kyoto photos 🌸</div></div><div class="msg-meta"><div class="msg-time">8h</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'dev')"><div class="avatar" style="background:linear-gradient(135deg,#a78bfa,#60a5fa)">DC</div><div class="msg-info"><div class="msg-name">Dev Collective</div><div class="msg-preview">3 new replies to your poll comment</div></div><div class="msg-meta"><div class="msg-time">1d</div><div class="msg-unread">1</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'theo')"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6)">TN</div><div class="msg-info"><div class="msg-name">Theo Nakamura</div><div class="msg-preview">Congrats on the milestone! Let's catch up</div></div><div class="msg-meta"><div class="msg-time">2d</div></div></div>
-      <div class="msg-item" onclick="openChat(event,'luna')"><div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#8b5cf6)">LX</div><div class="msg-info"><div class="msg-name">Luna Xi</div><div class="msg-preview">Sent you a research paper you'd enjoy</div></div><div class="msg-meta"><div class="msg-time">3d</div></div></div>
+      <div style="text-align:center;padding:50px 20px;color:var(--text3)">
+        <div style="font-size:40px;margin-bottom:10px">💬</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text2);margin-bottom:5px">No conversations yet</div>
+        <div style="font-size:12px;max-width:220px;margin:0 auto">Start a conversation with someone from the People page.</div>
+      </div>
     </div>
-    <div class="msg-chat">
-      <div class="msg-chat-header">
-        <div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div>
-        <div><div class="msg-chat-name" id="chatName">Mia Kovacs</div><div class="msg-chat-status">● Online</div></div>
-        <div class="msg-chat-actions">
-          <div class="icon-btn" onclick="showToast('📞','Calling Mia…')">📞</div>
-          <div class="icon-btn" onclick="showToast('📹','Video call starting…')">📹</div>
-          <div class="icon-btn" onclick="showToast('⋯','Chat options')">⋯</div>
-        </div>
-      </div>
-      <div class="chat-messages" id="chatMessages">
-        <div class="chat-bubble-wrap"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c);width:30px;height:30px;font-size:11px">MK</div><div><div class="chat-bubble">Hey Jordan! 👋 Great post about the onboarding redesign. Really inspiring!</div><div class="chat-time">Yesterday 2:14 PM</div></div></div>
-        <div class="chat-bubble-wrap me"><div class="avatar online" style="width:30px;height:30px;font-size:11px">JD</div><div><div class="chat-bubble">Thanks so much Mia! It was a tough challenge but the results spoke for themselves 🙌</div><div class="chat-time">Yesterday 2:18 PM</div></div></div>
-        <div class="chat-bubble-wrap"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c);width:30px;height:30px;font-size:11px">MK</div><div><div class="chat-bubble">Can we schedule a design review for Thursday? I'd love your feedback on my new project.</div><div class="chat-time">2:22 PM</div></div></div>
-        <div class="chat-bubble-wrap me"><div class="avatar online" style="width:30px;height:30px;font-size:11px">JD</div><div><div class="chat-bubble">Thursday works perfectly! How about 3pm PST?</div><div class="chat-time">2:25 PM</div></div></div>
-        <div class="chat-bubble-wrap"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c);width:30px;height:30px;font-size:11px">MK</div><div><div class="chat-bubble">Perfect! I'll send a calendar invite. Looking forward to it 🎉</div><div class="chat-time">2:27 PM</div></div></div>
-      </div>
-      <div class="chat-input-bar">
-        <div class="icon-btn" onclick="showToast('📎','Attachment')">📎</div>
-        <div class="icon-btn" onclick="showToast('😊','Emoji picker')">😊</div>
-        <textarea class="chat-input" id="chatInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg()}" rows="1"></textarea>
-        <div class="chat-send" onclick="sendChatMsg()">➤</div>
+    <div class="msg-chat" style="display:flex;align-items:center;justify-content:center">
+      <div style="text-align:center;color:var(--text3)">
+        <div style="font-size:52px;margin-bottom:14px">✉️</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text2);margin-bottom:6px">Your messages will show up here</div>
+        <div style="font-size:13px;max-width:280px;margin:0 auto">Select a conversation, or find people to message from the People page.</div>
       </div>
     </div>
   </div>
@@ -1663,18 +1644,15 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
 </div>
 
 <div class="page" id="page-notifications">
-  <div class="topbar"><span class="topbar-title">Notifications</span><div class="topbar-right"><div class="tab-row"><div class="tab active" onclick="setTab(this)">All</div><div class="tab" onclick="setTab(this)">Mentions</div><div class="tab" onclick="setTab(this)">Activity</div></div><div class="icon-btn" onclick="showToast('✓','All marked as read')">✓</div></div></div>
+  <div class="topbar"><span class="topbar-title">Notifications</span><div class="topbar-right"><div class="icon-btn" onclick="markAllNotificationsRead()" title="Mark all as read">✓</div></div></div>
   <div class="page-content">
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(244,63,94,.12)">❤</div><div class="notif-content"><div class="notif-text"><b>Mia Kovacs</b> and <b>47 others</b> liked your post about the productivity hack.</div><div class="notif-time">2 minutes ago</div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(45,200,220,.12)">👤</div><div class="notif-content"><div class="notif-text"><b>Alex Thompson</b> started following you.</div><div class="notif-time">14 minutes ago</div><div class="notif-action"><button class="btn-ghost btn-sm" onclick="followUser(this)">Follow back</button></div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(139,92,246,.12)">💬</div><div class="notif-content"><div class="notif-text"><b>Kai Reyes</b> commented on your post: "This is exactly what I needed to hear today!"</div><div class="notif-time">1 hour ago</div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(245,158,11,.12)">🔁</div><div class="notif-content"><div class="notif-text"><b>Theo Nakamura</b> reposted your article about onboarding design.</div><div class="notif-time">2 hours ago</div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(16,185,129,.12)">⬡</div><div class="notif-content"><div class="notif-text"><b>AI Builders</b> community invited you to join as a founding member.</div><div class="notif-time">3 hours ago</div><div class="notif-action" style="display:flex;gap:8px;margin-top:8px"><button class="btn-primary btn-sm" onclick="showToast('✅','Joined AI Builders!')">Accept</button><button class="btn-ghost btn-sm" onclick="showToast('✗','Invitation declined')">Decline</button></div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(45,200,220,.12)">✦</div><div class="notif-content"><div class="notif-text"><b>Hive AI</b> completed your content calendar for next week. <span style="color:var(--accent2);cursor:pointer" onclick="openAI('Show me my content calendar for next week')">View now →</span></div><div class="notif-time">4 hours ago</div></div><div class="notif-unread-dot"></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(244,63,94,.12)">❤</div><div class="notif-content"><div class="notif-text"><b>Sarah Mendez</b> and <b>Luna Xi</b> liked your comment in the Dev Collective community.</div><div class="notif-time">5 hours ago</div></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(139,92,246,.12)">🏅</div><div class="notif-content"><div class="notif-text">You earned the <b>Top Creator</b> badge for consistently high engagement this month!</div><div class="notif-time">Yesterday</div></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(245,158,11,.12)">💼</div><div class="notif-content"><div class="notif-text"><b>Vercel</b> viewed your profile after you applied for the Senior Frontend Engineer role.</div><div class="notif-time">Yesterday</div></div></div>
-    <div class="notif-item"><div class="notif-icon-wrap" style="background:rgba(45,200,220,.12)">📊</div><div class="notif-content"><div class="notif-text">Your post reached <b>10,000 impressions</b> — your best performance this month!</div><div class="notif-time">2 days ago</div></div></div>
+    <div id="notificationsList">
+      <div style="text-align:center;padding:70px 20px;color:var(--text3)">
+        <div style="font-size:52px;margin-bottom:14px">🔔</div>
+        <div style="font-size:17px;font-weight:700;color:var(--text2);margin-bottom:6px">No notifications yet</div>
+        <div style="font-size:14px;max-width:320px;margin:0 auto">When people like or comment on your posts, you'll see it here.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1729,49 +1707,16 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <div class="topbar"><span class="topbar-title">Analytics</span><div class="topbar-right"><div class="tab-row"><div class="tab active" onclick="setTab(this)">7 Days</div><div class="tab" onclick="setTab(this)">30 Days</div><div class="tab" onclick="setTab(this)">90 Days</div></div></div></div>
   <div class="page-content">
     <div class="stats-grid">
-      <div class="stat-card"><div class="stat-value">18.3k</div><div class="stat-label">Total Impressions</div><div class="stat-change up">↑ 24% vs last week</div></div>
-      <div class="stat-card"><div class="stat-value">2.4k</div><div class="stat-label">Followers</div><div class="stat-change up">↑ +312 this week</div></div>
-      <div class="stat-card"><div class="stat-value">8.7%</div><div class="stat-label">Engagement Rate</div><div class="stat-change up">↑ 1.2% vs avg</div></div>
-      <div class="stat-card"><div class="stat-value">312</div><div class="stat-label">Posts Published</div><div class="stat-change up">↑ 8 this week</div></div>
+      <div class="stat-card"><div class="stat-value" id="an-posts">0</div><div class="stat-label">Posts Published</div></div>
+      <div class="stat-card"><div class="stat-value" id="an-followers">0</div><div class="stat-label">Followers</div></div>
+      <div class="stat-card"><div class="stat-value" id="an-following">0</div><div class="stat-label">Following</div></div>
+      <div class="stat-card"><div class="stat-value" id="an-joined">—</div><div class="stat-label">Member Since</div></div>
     </div>
-    <div class="chart-wrap">
-      <div class="chart-title">Daily Impressions (Last 7 Days)</div>
-      <div class="chart-bars">
-        <div class="chart-bar-col"><div class="chart-bar" style="height:45%"></div><div class="chart-bar-label">Mon</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:62%"></div><div class="chart-bar-label">Tue</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:55%"></div><div class="chart-bar-label">Wed</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:80%"></div><div class="chart-bar-label">Thu</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:70%"></div><div class="chart-bar-label">Fri</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:90%"></div><div class="chart-bar-label">Sat</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:100%"></div><div class="chart-bar-label">Sun</div></div>
-      </div>
+    <div style="text-align:center;padding:60px 20px;color:var(--text3)">
+      <div style="font-size:48px;margin-bottom:14px">📊</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text2);margin-bottom:6px">Not enough data yet</div>
+      <div style="font-size:14px;max-width:340px;margin:0 auto">Once you start posting and getting engagement, your performance charts and top posts will show up here.</div>
     </div>
-    <div class="chart-wrap">
-      <div class="chart-title">Follower Growth (Last 7 Days)</div>
-      <div class="chart-bars">
-        <div class="chart-bar-col"><div class="chart-bar" style="height:40%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Mon</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:55%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Tue</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:48%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Wed</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:72%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Thu</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:65%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Fri</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:85%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Sat</div></div>
-        <div class="chart-bar-col"><div class="chart-bar" style="height:95%;background:linear-gradient(to top,var(--purple),#ec4899)"></div><div class="chart-bar-label">Sun</div></div>
-      </div>
-    </div>
-    <div class="analytics-tabs">
-      <div class="ana-tab active" onclick="setAnaTab(this)">Overview</div>
-      <div class="ana-tab" onclick="setAnaTab(this)">Posts</div>
-      <div class="ana-tab" onclick="setAnaTab(this)">Followers</div>
-      <div class="ana-tab" onclick="setAnaTab(this)">Reach</div>
-    </div>
-    <div class="section-header"><span class="section-title">Top Performing Posts</span><span class="panel-see-all">Export CSV</span></div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:0 1px 6px rgba(99,102,241,.06)">
-      <div class="top-post-row"><div class="top-post-rank">1</div><div class="top-post-info"><div class="top-post-title">Just crossed 2,000 followers on Hive 🎉</div><div class="top-post-meta">Jul 12 · 1.8k likes · 38 comments</div></div><div class="top-post-stat"><div class="top-post-num">5,400</div><div class="top-post-lbl">impressions</div></div></div>
-      <div class="top-post-row"><div class="top-post-rank">2</div><div class="top-post-info"><div class="top-post-title">Hot take: the best productivity hack isn't a new app…</div><div class="top-post-meta">Jul 10 · 876 likes · 112 comments</div></div><div class="top-post-stat"><div class="top-post-num">4,200</div><div class="top-post-lbl">impressions</div></div></div>
-      <div class="top-post-row"><div class="top-post-rank">3</div><div class="top-post-info"><div class="top-post-title">I rebuilt my entire dev setup this weekend</div><div class="top-post-meta">Jul 8 · 543 likes · 67 comments</div></div><div class="top-post-stat"><div class="top-post-num">3,100</div><div class="top-post-lbl">impressions</div></div></div>
-      <div class="top-post-row" style="border:none"><div class="top-post-rank">4</div><div class="top-post-info"><div class="top-post-title">Building in public: week 12 update 🚀</div><div class="top-post-meta">Jul 5 · 412 likes · 54 comments</div></div><div class="top-post-stat"><div class="top-post-num">2,800</div><div class="top-post-lbl">impressions</div></div></div>
-    </div>
-    <div class="post-card"><div class="post-header"><div class="avatar online">JD</div><div class="post-meta"><div class="post-author">Jordan Dev</div><div class="post-sub">Published 1d ago</div></div><div style="margin-left:auto;text-align:right"><div style="font-size:16px;font-weight:800;color:var(--accent2)">5,400</div><div style="font-size:11px;color:var(--text3)">impressions</div></div></div><div class="post-body" style="font-size:13px">Just crossed 2,000 followers on Hive 🎉 Thank you all — building in public is hard but this community makes it worth it.</div><div style="display:flex;gap:16px;padding-top:10px;border-top:1px solid var(--border)"><div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--rose)">412</div><div style="font-size:11px;color:var(--text3)">Likes</div></div><div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--hive-teal)">38</div><div style="font-size:11px;color:var(--text3)">Comments</div></div><div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--green)">91</div><div style="font-size:11px;color:var(--text3)">Reposts</div></div><div style="text-align:center"><div style="font-size:14px;font-weight:700;color:var(--amber)">8.7%</div><div style="font-size:11px;color:var(--text3)">Eng. Rate</div></div></div></div>
   </div>
 </div>
 
@@ -2053,66 +1998,15 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <div class="topbar"><span class="topbar-title">People</span><div class="topbar-right"><div class="tab-row"><div class="tab active" onclick="setTab(this)">Suggested</div><div class="tab" onclick="setTab(this)">Following</div><div class="tab" onclick="setTab(this)">Followers</div></div></div></div>
   <div class="page-content">
     <div class="search-bar" style="margin-bottom:18px"><span style="color:var(--text3)">⌕</span><input placeholder="Search people by name, skill, or interest…"></div>
-    <div class="people-grid">
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div>
-        <div class="people-name">Mia Kovacs</div>
-        <div class="people-handle">@miakovacs</div>
-        <div class="mutual-tag">👥 14 mutual connections</div>
-        <div class="people-bio">Product designer & creator. Turning complex problems into simple, beautiful solutions.</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">52k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">312</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
-      </div>
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#06b6d4,#3a7bd5)">AT</div>
-        <div class="people-name">Alex Thompson</div>
-        <div class="people-handle">@alexthompson</div>
-        <div class="mutual-tag">👥 8 mutual connections</div>
-        <div class="people-bio">Full-stack engineer building in public. Live coding every Thursday on Hive.</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">28k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">201</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
-      </div>
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">KR</div>
-        <div class="people-name">Kai Reyes</div>
-        <div class="people-handle">@kaidesigns</div>
-        <div class="mutual-tag">👥 21 mutual connections</div>
-        <div class="people-bio">Design systems architect. Leading UI at Figma. Speaker, mentor, coffee addict ☕</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">24k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">445</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
-      </div>
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6)">TN</div>
-        <div class="people-name">Theo Nakamura</div>
-        <div class="people-handle">@theonakamura</div>
-        <div class="mutual-tag">👥 5 mutual connections</div>
-        <div class="people-bio">Founder & CEO. Just raised Series A 🎉 Building async collaboration tools for remote teams.</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">31k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">189</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
-      </div>
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#f59e0b,#8b5cf6)">LX</div>
-        <div class="people-name">Luna Xi</div>
-        <div class="people-handle">@lunaximl</div>
-        <div class="mutual-tag">👥 11 mutual connections</div>
-        <div class="people-bio">AI researcher & writer. Making machine learning accessible to everyone. PhD @ MIT.</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">18k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">267</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
-      </div>
-      <div class="people-card">
-        <div class="people-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444)">SM</div>
-        <div class="people-name">Sarah Mendez</div>
-        <div class="people-handle">@sarahdesigns</div>
-        <div class="mutual-tag">👥 17 mutual connections</div>
-        <div class="people-bio">Photographer & visual storyteller. Travel, street, portrait. Always chasing golden hour 🌅</div>
-        <div class="people-stats"><div class="pstat"><div class="p-stat-num">41k</div><div class="p-stat-lbl">Followers</div></div><div class="pstat"><div class="p-stat-num">822</div><div class="p-stat-lbl">Posts</div></div></div>
-        <button class="follow-btn" style="width:100%" onclick="followUser(this)">Follow</button>
+    <div class="people-grid" id="peopleGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--text3)">
+        <div style="font-size:44px;margin-bottom:12px">👥</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text2)">Loading community members...</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ SAVED PAGE ══ -->
 <div class="page" id="page-saved">
   <div class="topbar"><span class="topbar-title">Saved</span><div class="topbar-right"><div class="icon-btn" onclick="showToast('⚙','Organize collections')">⚙</div></div></div>
   <div class="page-content">
@@ -2283,11 +2177,10 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div class="trend-item" onclick="showToast('🌐','#RemoteWork')"><div class="trend-rank">5</div><div class="trend-info"><div class="trend-tag">#RemoteWork</div><div class="trend-count">18.9k posts</div></div><div class="trend-icon">🌐</div></div>
   </div>
   <div class="panel-section">
-    <div class="panel-title">People to follow <span class="panel-see-all">See all</span></div>
-    <div class="follow-item"><div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#ec4899)">KR</div><div class="follow-info"><div class="follow-name">Kai Reyes</div><div class="follow-handle">Design Lead · 24k</div></div><button class="follow-btn" onclick="followUser(this)">Follow</button></div>
-    <div class="follow-item"><div class="avatar" style="background:linear-gradient(135deg,var(--hive-teal),var(--blue))">LX</div><div class="follow-info"><div class="follow-name">Luna Xi</div><div class="follow-handle">AI Research · 18k</div></div><button class="follow-btn" onclick="followUser(this)">Follow</button></div>
-    <div class="follow-item"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#3b82f6)">TN</div><div class="follow-info"><div class="follow-name">Theo Nakamura</div><div class="follow-handle">Founder · 31k</div></div><button class="follow-btn" onclick="followUser(this)">Follow</button></div>
-    <div class="follow-item"><div class="avatar" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div><div class="follow-info"><div class="follow-name">Mia Kovacs</div><div class="follow-handle">Creator · 52k</div></div><button class="follow-btn" onclick="followUser(this)">Follow</button></div>
+    <div class="panel-title">People to follow <span class="panel-see-all" onclick="showPage('people',null)">See all</span></div>
+    <div id="sidebarFollowSuggestions">
+      <div style="font-size:12px;color:var(--text3);padding:8px 4px">Sign in to see people on Hive</div>
+    </div>
   </div>
   <div class="panel-section">
     <div class="panel-title">🔥 Your Streak</div>
@@ -2495,15 +2388,193 @@ function setPTab(el){document.querySelectorAll('.profile-tab').forEach(t=>t.clas
 function setExploreChip(el){document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');showToast('🔍','Filtering: '+el.textContent);}
 function setChip(el){const p=el.parentElement;p.querySelectorAll('.filter-chip,.cat-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
 document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',function(){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));this.classList.add('active');}));
-function toggleLike(btn){
-  const liked=btn.classList.toggle('liked');
-  const span=btn.querySelector('span');if(!span)return;
-  const raw=span.textContent.trim(),isK=raw.includes('k');
-  let v=parseFloat(raw.replace('k','').replace(/,/g,''));
-  if(liked)span.textContent=isK?(v+.001).toFixed(1)+'k':(v+1).toLocaleString();
-  else span.textContent=isK?(v-.001).toFixed(1)+'k':Math.max(0,v-1).toLocaleString();
+async function toggleLike(postIdOrBtn,btnEl){
+  // Backward-compat: static demo posts elsewhere call toggleLike(this) with one arg — visual only
+  if(btnEl===undefined){
+    const btn=postIdOrBtn;
+    const liked=btn.classList.toggle('liked');
+    const span=btn.querySelector('span');if(!span)return;
+    const raw=span.textContent.trim(),isK=raw.includes('k');
+    let v=parseFloat(raw.replace('k','').replace(/,/g,''));
+    if(liked)span.textContent=isK?(v+.001).toFixed(1)+'k':(v+1).toLocaleString();
+    else span.textContent=isK?(v-.001).toFixed(1)+'k':Math.max(0,v-1).toLocaleString();
+    return;
+  }
+  // Real posts: postId + button element, backed by Supabase
+  const postId=postIdOrBtn;
+  if(!currentUser||!supabaseClient){showToast('🔒','Please sign in to like posts!');return;}
+  const span=btnEl.querySelector('span');
+  const isLiked=btnEl.classList.contains('liked');
+  btnEl.style.pointerEvents='none';
+  try{
+    if(isLiked){
+      const {error}=await supabaseClient.from('likes').delete().eq('post_id',postId).eq('user_id',currentUser.id);
+      if(error)throw error;
+      btnEl.classList.remove('liked');
+      if(span)span.textContent=Math.max(0,(parseInt(span.textContent)||1)-1);
+    }else{
+      const {error}=await supabaseClient.from('likes').insert({post_id:postId,user_id:currentUser.id});
+      if(error)throw error;
+      btnEl.classList.add('liked');
+      if(span)span.textContent=(parseInt(span.textContent)||0)+1;
+    }
+  }catch(err){
+    console.error('[Hive] toggleLike failed:',err);
+    showToast('⚠️',err.message||'Could not update like.');
+  }finally{
+    btnEl.style.pointerEvents='';
+  }
 }
 function toggleBookmark(btn){btn.classList.toggle('bookmarked');showToast(btn.classList.contains('bookmarked')?'🔖':'🗑',btn.classList.contains('bookmarked')?'Post saved!':'Post removed from saved');}
+
+/* ══════════ REAL COMMENTS ══════════ */
+let currentCommentPostId=null;
+
+function openComments(postId,authorName){
+  currentCommentPostId=postId;
+  document.getElementById('commentPostAuthor').textContent=authorName||'Post';
+  document.getElementById('commentOverlay').classList.add('open');
+  const inp=document.getElementById('commentInput');
+  if(inp){inp.value='';setTimeout(()=>inp.focus(),300);}
+  loadComments(postId);
+}
+function closeComments(){
+  document.getElementById('commentOverlay').classList.remove('open');
+  currentCommentPostId=null;
+}
+
+function buildCommentHTML(c){
+  const p=c.profiles||{};
+  const name=p.full_name||'Hive Member';
+  const initials=p.avatar_initials||'HM';
+  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+  return `<div class="comment-item">
+    <div class="avatar" style="width:32px;height:32px;font-size:11px;background:${gradient};flex-shrink:0">${initials}</div>
+    <div class="comment-body">
+      <div class="comment-author">${escapeHtml(name)}</div>
+      <div class="comment-text">${escapeHtml(c.content)}</div>
+      <div class="comment-actions"><span class="comment-action">${timeAgo(c.created_at)}</span></div>
+    </div>
+  </div>`;
+}
+
+async function loadComments(postId){
+  const list=document.getElementById('commentList');
+  if(!supabaseClient){list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Comments unavailable right now.</div>';return;}
+  list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Loading comments…</div>';
+  try{
+    const {data,error}=await supabaseClient.from('comments').select('*, profiles(*)').eq('post_id',postId).order('created_at',{ascending:true});
+    if(error)throw error;
+    if(!data||data.length===0){
+      list.innerHTML='<div style="padding:30px 20px;text-align:center;color:var(--text3)"><div style="font-size:32px;margin-bottom:8px">💬</div><div style="font-size:13px">No comments yet — be the first to reply!</div></div>';
+      return;
+    }
+    list.innerHTML=data.map(buildCommentHTML).join('');
+    list.scrollTop=list.scrollHeight;
+  }catch(e){
+    console.error('[Hive] loadComments failed:',e);
+    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Could not load comments.</div>';
+  }
+}
+
+async function submitComment(){
+  const inp=document.getElementById('commentInput');
+  const text=inp.value.trim();
+  if(!text||!currentCommentPostId)return;
+  if(!currentUser||!supabaseClient){showToast('🔒','Please sign in to comment!');return;}
+  inp.disabled=true;
+  try{
+    const {error}=await supabaseClient.from('comments').insert({post_id:currentCommentPostId,user_id:currentUser.id,content:text});
+    if(error)throw error;
+    inp.value='';
+    await loadComments(currentCommentPostId);
+    // Update the visible comment count badge on the post card, if present
+    const countEl=document.getElementById('cmt-count-'+currentCommentPostId);
+    if(countEl)countEl.textContent=(parseInt(countEl.textContent)||0)+1;
+    showToast('💬','Comment posted!');
+  }catch(err){
+    console.error('[Hive] submitComment failed:',err);
+    showToast('⚠️',err.message||'Could not post comment.');
+  }finally{
+    inp.disabled=false;
+  }
+}
+
+/* ══════════ REAL NOTIFICATIONS ══════════ */
+function notificationText(n){
+  const actorName=escapeHtml(n.actor?.full_name||'Someone');
+  if(n.type==='like')return `<b>${actorName}</b> liked your post`;
+  if(n.type==='comment')return `<b>${actorName}</b> commented on your post`;
+  return `<b>${actorName}</b> interacted with your post`;
+}
+function notificationIcon(type){
+  if(type==='like')return {emoji:'❤',bg:'rgba(244,63,94,.12)'};
+  if(type==='comment')return {emoji:'💬',bg:'rgba(99,102,241,.12)'};
+  return {emoji:'🔔',bg:'rgba(148,163,184,.12)'};
+}
+function buildNotificationHTML(n){
+  const icon=notificationIcon(n.type);
+  return `<div class="notif-item" onclick="markNotificationRead('${n.id}',this)" style="cursor:pointer">
+    <div class="notif-icon-wrap" style="background:${icon.bg}">${icon.emoji}</div>
+    <div class="notif-content">
+      <div class="notif-text">${notificationText(n)}</div>
+      <div class="notif-time">${timeAgo(n.created_at)}</div>
+    </div>
+    ${!n.is_read?'<div class="notif-unread-dot"></div>':''}
+  </div>`;
+}
+
+async function loadNotifications(){
+  if(!supabaseClient||!currentUser)return;
+  const wrap=document.getElementById('notificationsList');
+  if(!wrap)return;
+  try{
+    const {data,error}=await supabaseClient.from('notifications')
+      .select('*, actor:actor_id(*)')
+      .eq('recipient_id',currentUser.id)
+      .order('created_at',{ascending:false})
+      .limit(50);
+    if(error)throw error;
+    const unreadCount=(data||[]).filter(n=>!n.is_read).length;
+    const badge=document.getElementById('notifBadge');
+    if(badge){
+      if(unreadCount>0){badge.style.display='inline-block';badge.textContent=unreadCount>99?'99+':unreadCount;}
+      else badge.style.display='none';
+    }
+    if(!data||data.length===0){
+      wrap.innerHTML=`<div style="text-align:center;padding:70px 20px;color:var(--text3)">
+        <div style="font-size:52px;margin-bottom:14px">🔔</div>
+        <div style="font-size:17px;font-weight:700;color:var(--text2);margin-bottom:6px">No notifications yet</div>
+        <div style="font-size:14px;max-width:320px;margin:0 auto">When people like or comment on your posts, you'll see it here.</div>
+      </div>`;
+      return;
+    }
+    wrap.innerHTML=data.map(buildNotificationHTML).join('');
+  }catch(e){
+    console.error('[Hive] loadNotifications failed:',e);
+  }
+}
+
+async function markNotificationRead(id,el){
+  if(!supabaseClient)return;
+  try{
+    await supabaseClient.from('notifications').update({is_read:true}).eq('id',id);
+    if(el){const dot=el.querySelector('.notif-unread-dot');if(dot)dot.remove();}
+    loadNotifications();
+  }catch(e){console.error('[Hive] markNotificationRead failed:',e);}
+}
+
+async function markAllNotificationsRead(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    await supabaseClient.from('notifications').update({is_read:true}).eq('recipient_id',currentUser.id).eq('is_read',false);
+    showToast('✅','All notifications marked as read');
+    loadNotifications();
+  }catch(e){
+    console.error('[Hive] markAllNotificationsRead failed:',e);
+    showToast('⚠️','Could not update notifications.');
+  }
+}
 function followUser(btn){
   if(btn.textContent==='Follow'){btn.textContent='Following';btn.classList.add('following');showToast('✅','Now following!');}
   else{btn.textContent='Follow';btn.classList.remove('following');}
@@ -2796,6 +2867,7 @@ async function loadUserProfile(user){
     renderProfile(profile);
     loadFeedPosts();
     loadProfilePosts(user.id);
+    loadNotifications();
   }catch(e){
     console.error('[Hive] loadUserProfile failed:',e);
   }
@@ -2943,12 +3015,16 @@ function timeAgo(dateStr){
 }
 function escapeHtml(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-function buildPostCardHTML(post,author){
+function buildPostCardHTML(post,author,engagement){
+  engagement=engagement||{likeCounts:{},commentCounts:{},likedByMe:new Set()};
   const name=author?.full_name||'Hive Member';
   const username=author?.username||'member';
   const initials=author?.avatar_initials||'HM';
   const gradient=AVATAR_GRADIENTS[author?.avatar_color]||AVATAR_GRADIENTS.indigo;
-  return `<div class="post-card">
+  const likeCount=engagement.likeCounts[post.id]||0;
+  const commentCount=engagement.commentCounts[post.id]||0;
+  const isLiked=engagement.likedByMe.has(post.id);
+  return `<div class="post-card" data-post-id="${post.id}">
     <div class="post-header">
       <div class="avatar" style="background:${gradient}">${initials}</div>
       <div class="post-meta"><div class="post-author">${escapeHtml(name)}</div><div class="post-sub">@${escapeHtml(username)} <span class="dot"></span> ${timeAgo(post.created_at)}</div></div>
@@ -2956,13 +3032,37 @@ function buildPostCardHTML(post,author){
     </div>
     <div class="post-body">${escapeHtml(post.content).replace(/\n/g,'<br>')}</div>
     <div class="post-actions">
-      <div class="action-btn" onclick="toggleLike(this)">❤ <span>0</span></div>
-      <div class="action-btn" onclick="openComments('${escapeHtml(name)}')">💬 <span>0</span></div>
+      <div class="action-btn ${isLiked?'liked':''}" onclick="toggleLike('${post.id}',this)">❤ <span>${likeCount}</span></div>
+      <div class="action-btn" onclick="openComments('${post.id}','${escapeHtml(name)}')">💬 <span id="cmt-count-${post.id}">${commentCount}</span></div>
       <div class="action-btn" onclick="showToast('🔁','Shared!')">🔁 <span>0</span></div>
       <div class="action-btn" onclick="toggleBookmark(this)">🔖 <span>Save</span></div>
       <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
     </div>
   </div>`;
+}
+
+/* ══════════ ENGAGEMENT: LIKES + COMMENTS AGGREGATION ══════════ */
+async function fetchEngagementForPosts(postIds){
+  const empty={likeCounts:{},commentCounts:{},likedByMe:new Set()};
+  if(!supabaseClient||!postIds||!postIds.length)return empty;
+  try{
+    const [likesRes,commentsRes]=await Promise.all([
+      supabaseClient.from('likes').select('post_id,user_id').in('post_id',postIds),
+      supabaseClient.from('comments').select('post_id').in('post_id',postIds)
+    ]);
+    const likeCounts={},commentCounts={},likedByMe=new Set();
+    (likesRes.data||[]).forEach(l=>{
+      likeCounts[l.post_id]=(likeCounts[l.post_id]||0)+1;
+      if(currentUser&&l.user_id===currentUser.id)likedByMe.add(l.post_id);
+    });
+    (commentsRes.data||[]).forEach(c=>{
+      commentCounts[c.post_id]=(commentCounts[c.post_id]||0)+1;
+    });
+    return {likeCounts,commentCounts,likedByMe};
+  }catch(e){
+    console.error('[Hive] fetchEngagementForPosts failed:',e);
+    return empty;
+  }
 }
 
 async function loadFeedPosts(){
@@ -2978,8 +3078,9 @@ async function loadFeedPosts(){
       return;
     }
     if(empty)empty.style.display='none';
+    const engagement=await fetchEngagementForPosts(data.map(p=>p.id));
     Array.from(feed.querySelectorAll('.post-card')).forEach(el=>el.remove());
-    feed.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles)).join(''));
+    feed.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles,engagement)).join(''));
   }catch(e){console.error('[Hive] loadFeedPosts failed:',e);}
 }
 
@@ -2998,10 +3099,205 @@ async function loadProfilePosts(userId){
       return;
     }
     if(empty)empty.style.display='none';
+    const engagement=await fetchEngagementForPosts(data.map(p=>p.id));
     Array.from(wrap.querySelectorAll('.post-card')).forEach(el=>el.remove());
-    wrap.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles)).join(''));
+    wrap.insertAdjacentHTML('beforeend',data.map(p=>buildPostCardHTML(p,p.profiles,engagement)).join(''));
   }catch(e){console.error('[Hive] loadProfilePosts failed:',e);}
 }
+
+/* ══════════ REAL SOCIAL: FOLLOW SYSTEM ══════════ */
+let myFollowingIds=new Set();
+
+async function refreshFollowingIds(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {data,error}=await supabaseClient.from('follows').select('following_id').eq('follower_id',currentUser.id);
+    if(error)throw error;
+    myFollowingIds=new Set((data||[]).map(r=>r.following_id));
+  }catch(e){console.error('[Hive] refreshFollowingIds failed:',e);}
+}
+
+async function toggleFollow(targetId,btnEl){
+  if(!currentUser||!supabaseClient){showToast('🔒','Please sign in first!');return;}
+  if(targetId===currentUser.id){showToast('🙂','You can\'t follow yourself!');return;}
+  const isFollowing=myFollowingIds.has(targetId);
+  btnEl.disabled=true;
+  try{
+    if(isFollowing){
+      const {error}=await supabaseClient.from('follows').delete().eq('follower_id',currentUser.id).eq('following_id',targetId);
+      if(error)throw error;
+      myFollowingIds.delete(targetId);
+      btnEl.textContent='Follow';
+      btnEl.classList.remove('following');
+      showToast('👋','Unfollowed');
+    }else{
+      const {error}=await supabaseClient.from('follows').insert({follower_id:currentUser.id,following_id:targetId});
+      if(error)throw error;
+      myFollowingIds.add(targetId);
+      btnEl.textContent='Following';
+      btnEl.classList.add('following');
+      showToast('✅','Now following!');
+    }
+    updateFollowCounts();
+  }catch(err){
+    console.error('[Hive] toggleFollow failed:',err);
+    showToast('⚠️',err.message||'Could not update follow status.');
+  }finally{
+    btnEl.disabled=false;
+  }
+}
+
+function personAvatarHTML(p,size){
+  const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+  return `<div class="avatar" style="background:${gradient};${size?('width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.36)+'px'):''}">${initials}</div>`;
+}
+
+function buildSidebarFollowItemHTML(p){
+  const following=myFollowingIds.has(p.id);
+  return `<div class="follow-item">
+    ${personAvatarHTML(p)}
+    <div class="follow-info"><div class="follow-name">${escapeHtml(p.full_name||'Hive Member')}</div><div class="follow-handle">@${escapeHtml(p.username||'member')}</div></div>
+    <button class="follow-btn ${following?'following':''}" onclick="toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
+  </div>`;
+}
+
+async function loadFollowSuggestions(){
+  const wrap=document.getElementById('sidebarFollowSuggestions');
+  if(!wrap||!supabaseClient||!currentUser)return;
+  try{
+    await refreshFollowingIds();
+    const {data,error}=await supabaseClient.from('profiles').select('*').neq('id',currentUser.id).order('created_at',{ascending:false}).limit(4);
+    if(error)throw error;
+    if(!data||data.length===0){
+      wrap.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 4px">No other members yet — invite your friends to Hive!</div>';
+      return;
+    }
+    wrap.innerHTML=data.map(buildSidebarFollowItemHTML).join('');
+  }catch(e){
+    console.error('[Hive] loadFollowSuggestions failed:',e);
+    wrap.innerHTML='<div style="font-size:12px;color:var(--text3);padding:8px 4px">Could not load suggestions.</div>';
+  }
+}
+
+function buildPersonCardHTML(p){
+  const following=myFollowingIds.has(p.id);
+  const joined=p.created_at?new Date(p.created_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
+  return `<div class="people-card">
+    ${personAvatarHTML(p,62).replace('class="avatar"','class="avatar people-avatar"')}
+    <div class="people-name">${escapeHtml(p.full_name||'Hive Member')}</div>
+    <div class="people-handle">@${escapeHtml(p.username||'member')}</div>
+    <div class="people-bio">${escapeHtml(p.bio||'No bio yet.')}</div>
+    ${joined?`<div class="mutual-tag">🐝 Joined ${joined}</div>`:''}
+    <button class="follow-btn ${following?'following':''}" style="width:100%" onclick="toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
+  </div>`;
+}
+
+async function loadPeoplePage(){
+  const grid=document.getElementById('peopleGrid');
+  if(!grid||!supabaseClient)return;
+  if(!currentUser){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--text3)">Sign in to see and connect with other Hive members.</div>';
+    return;
+  }
+  try{
+    await refreshFollowingIds();
+    const {data,error}=await supabaseClient.from('profiles').select('*').neq('id',currentUser.id).order('created_at',{ascending:false});
+    if(error)throw error;
+    if(!data||data.length===0){
+      grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--text3)"><div style="font-size:44px;margin-bottom:12px">👥</div><div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px">No other members yet</div><div style="font-size:13px">Invite your friends to join Hive!</div></div>';
+      return;
+    }
+    grid.innerHTML=data.map(buildPersonCardHTML).join('');
+  }catch(e){
+    console.error('[Hive] loadPeoplePage failed:',e);
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3)">Could not load members.</div>';
+  }
+}
+
+async function updateFollowCounts(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const [{count:followers},{count:following}]=await Promise.all([
+      supabaseClient.from('follows').select('*',{count:'exact',head:true}).eq('following_id',currentUser.id),
+      supabaseClient.from('follows').select('*',{count:'exact',head:true}).eq('follower_id',currentUser.id)
+    ]);
+    const fEl=document.getElementById('pf-stat-followers'); if(fEl)fEl.textContent=followers||0;
+    const gEl=document.getElementById('pf-stat-following'); if(gEl)gEl.textContent=following||0;
+    const anF=document.getElementById('an-followers'); if(anF)anF.textContent=followers||0;
+    const anG=document.getElementById('an-following'); if(anG)anG.textContent=following||0;
+  }catch(e){console.error('[Hive] updateFollowCounts failed:',e);}
+}
+
+async function updateAnalyticsStats(){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {count:postCount}=await supabaseClient.from('posts').select('*',{count:'exact',head:true}).eq('user_id',currentUser.id);
+    const anP=document.getElementById('an-posts'); if(anP)anP.textContent=postCount||0;
+    const anJ=document.getElementById('an-joined');
+    if(anJ&&currentProfile?.created_at)anJ.textContent=new Date(currentProfile.created_at).toLocaleDateString('en-US',{month:'short',year:'numeric'});
+    updateFollowCounts();
+  }catch(e){console.error('[Hive] updateAnalyticsStats failed:',e);}
+}
+
+/* ══════════ REAL SEARCH ══════════ */
+function openSearch(){
+  const overlay=document.getElementById('searchOverlay');
+  if(!overlay)return;
+  overlay.classList.add('open');
+  const input=document.getElementById('searchInput');
+  if(input){input.value='';input.focus();}
+  const wrap=document.getElementById('searchPeopleResults');
+  if(wrap)wrap.innerHTML='<div style="padding:10px 20px;font-size:12px;color:var(--text3)">Start typing to search real Hive members…</div>';
+}
+function closeSearch(){
+  const overlay=document.getElementById('searchOverlay');
+  if(overlay)overlay.classList.remove('open');
+}
+
+let searchDebounce=null;
+function liveSearch(query){
+  clearTimeout(searchDebounce);
+  const wrap=document.getElementById('searchPeopleResults');
+  if(!wrap)return;
+  const q=query.trim();
+  if(!q){
+    wrap.innerHTML='<div style="padding:10px 20px;font-size:12px;color:var(--text3)">Start typing to search real Hive members…</div>';
+    return;
+  }
+  wrap.innerHTML='<div style="padding:10px 20px;font-size:12px;color:var(--text3)">Searching…</div>';
+  searchDebounce=setTimeout(()=>runSearch(q),300);
+}
+
+async function runSearch(q){
+  const wrap=document.getElementById('searchPeopleResults');
+  if(!supabaseClient){wrap.innerHTML='<div style="padding:10px 20px;font-size:12px;color:var(--text3)">Search unavailable right now.</div>';return;}
+  try{
+    const {data,error}=await supabaseClient.from('profiles').select('*')
+      .or(`username.ilike.%${q}%,full_name.ilike.%${q}%`)
+      .limit(8);
+    if(error)throw error;
+    const results=(data||[]).filter(p=>!currentUser||p.id!==currentUser.id);
+    if(results.length===0){
+      wrap.innerHTML=`<div style="padding:14px 20px;font-size:13px;color:var(--text3)">No members found matching "${escapeHtml(q)}"</div>`;
+      return;
+    }
+    wrap.innerHTML=results.map(p=>{
+      const following=myFollowingIds.has(p.id);
+      const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+      const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+      return `<div class="search-result-item">
+        <div class="search-result-icon" style="background:${gradient}">${initials}</div>
+        <div><div class="search-result-name">${escapeHtml(p.full_name||'Hive Member')}</div><div class="search-result-sub">@${escapeHtml(p.username||'member')}</div></div>
+        <button class="follow-btn btn-sm ${following?'following':''}" style="margin-left:auto" onclick="event.stopPropagation();toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
+      </div>`;
+    }).join('');
+  }catch(e){
+    console.error('[Hive] runSearch failed:',e);
+    wrap.innerHTML='<div style="padding:14px 20px;font-size:13px;color:var(--text3)">Search failed. Try again.</div>';
+  }
+}
+
 
 /* ── TAB SWITCH ── */
 function switchAuthTab(tab){
@@ -3406,30 +3702,7 @@ function votePanel(el){
     <div class="drawer-handle"></div>
     <div class="drawer-title">💬 Comments · <span id="commentPostAuthor">Post</span></div>
     <div class="comment-list" id="commentList">
-      <div class="comment-item">
-        <div class="avatar" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#10b981,#3b82f6);flex-shrink:0">TN</div>
-        <div class="comment-body">
-          <div class="comment-author">Theo Nakamura</div>
-          <div class="comment-text">This is incredibly insightful! Exactly what I needed to read today. The 10-second value clarity principle changed how I think about onboarding.</div>
-          <div class="comment-actions"><span class="comment-action" onclick="showToast('❤','Liked comment!')">❤ 24</span><span class="comment-action" onclick="showToast('↩','Reply')">Reply</span><span class="comment-action">3h ago</span></div>
-        </div>
-      </div>
-      <div class="comment-item">
-        <div class="avatar" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#8b5cf6,#ec4899);flex-shrink:0">KR</div>
-        <div class="comment-body">
-          <div class="comment-author">Kai Reyes</div>
-          <div class="comment-text">We applied this same principle to our design system and it halved our onboarding time. Less really is more 🙌</div>
-          <div class="comment-actions"><span class="comment-action" onclick="showToast('❤','Liked comment!')">❤ 18</span><span class="comment-action" onclick="showToast('↩','Reply')">Reply</span><span class="comment-action">5h ago</span></div>
-        </div>
-      </div>
-      <div class="comment-item">
-        <div class="avatar" style="width:32px;height:32px;font-size:11px;background:linear-gradient(135deg,#f59e0b,#8b5cf6);flex-shrink:0">LX</div>
-        <div class="comment-body">
-          <div class="comment-author">Luna Xi</div>
-          <div class="comment-text">Great results! What A/B testing framework did you use? Curious about the statistical significance of the 34% lift.</div>
-          <div class="comment-actions"><span class="comment-action" onclick="showToast('❤','Liked comment!')">❤ 9</span><span class="comment-action" onclick="showToast('↩','Reply')">Reply</span><span class="comment-action">7h ago</span></div>
-        </div>
-      </div>
+      <div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Loading comments…</div>
     </div>
     <div class="comment-input-bar">
       <div class="avatar online" style="width:32px;height:32px;font-size:11px;flex-shrink:0">JD</div>
@@ -3456,22 +3729,9 @@ function votePanel(el){
         <span class="search-tag-item" onclick="showToast('#Design','Filtered')">🎨 #Design</span>
         <span class="search-tag-item" onclick="showToast('#Startup','Filtered')">🚀 #Startup</span>
       </div>
-      <div class="search-section-label">People</div>
-      <div class="search-result-item" onclick="showPage('people',null);closeSearch()">
-        <div class="search-result-icon" style="background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div>
-        <div><div class="search-result-name">Mia Kovacs</div><div class="search-result-sub">@miakovacs · 52k followers · Creator</div></div>
-        <button class="follow-btn btn-sm" style="margin-left:auto" onclick="event.stopPropagation();followUser(this)">Follow</button>
-      </div>
-      <div class="search-result-item" onclick="showPage('people',null);closeSearch()">
-        <div class="search-result-icon" style="background:linear-gradient(135deg,#10b981,#3b82f6)">TN</div>
-        <div><div class="search-result-name">Theo Nakamura</div><div class="search-result-sub">@theonakamura · 31k followers · Founder</div></div>
-        <button class="follow-btn btn-sm" style="margin-left:auto" onclick="event.stopPropagation();followUser(this)">Follow</button>
-      </div>
-      <div class="search-section-label">Communities</div>
-      <div class="search-result-item" onclick="showPage('communities',null);closeSearch()">
-        <div class="search-result-icon" style="background:linear-gradient(135deg,#8b5cf6,#3b82f6);border-radius:10px">⬡</div>
-        <div><div class="search-result-name">AI Builders</div><div class="search-result-sub">22.1k members · Technology</div></div>
-        <button class="join-btn btn-sm" style="margin-left:auto" onclick="event.stopPropagation();toggleJoin(this)">Join</button>
+      <div class="search-section-label">People on Hive</div>
+      <div id="searchPeopleResults">
+        <div style="padding:10px 20px;font-size:12px;color:var(--text3)">Start typing to search real Hive members…</div>
       </div>
     </div>
   </div>

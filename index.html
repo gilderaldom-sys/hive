@@ -1194,6 +1194,27 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   .oauth-row { flex-direction: column; }
 }
 
+
+/* ── CIRCLE MEMBER CARDS ── */
+.circle-member-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 8px;text-align:center;cursor:pointer;transition:all .15s}
+.circle-member-card:hover{border-color:rgba(99,102,241,.3);transform:translateY(-2px)}
+.circle-member-name{font-size:11.5px;font-weight:600;color:var(--text);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ── POST OPTIONS DROPDOWN (three dots) ── */
+.post-menu-wrap{position:relative}
+.post-menu-dropdown{position:absolute;top:24px;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 10px 30px rgba(99,102,241,.15);min-width:150px;z-index:50;display:none;overflow:hidden}
+.post-menu-dropdown.open{display:block}
+.post-menu-item{padding:10px 14px;font-size:13px;color:var(--text);cursor:pointer;transition:background .15s;display:flex;align-items:center;gap:8px}
+.post-menu-item:hover{background:var(--surface2)}
+.post-menu-item.danger{color:var(--rose)}
+
+/* ── ADD TO CIRCLE BUTTON STATES ── */
+#pf-circle-btn.pending{background:var(--surface3);color:var(--text2)}
+#pf-circle-btn.accepted{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#16a34a}
+
+/* ── STORY UPLOAD ── */
+.story-ring.mine-has-story{background:linear-gradient(135deg,var(--honey),var(--coral),var(--brand))}
+
 </style>
 </head>
 <body>
@@ -1396,7 +1417,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   </div>
 
   <a class="nav-item active" onclick="showPage('home',this)"><span class="nav-icon">⌂</span> Home</a>
-  <a class="nav-item" onclick="showPage('profile',this)"><span class="nav-icon">◉</span> My Profile</a>
+  <a class="nav-item" onclick="viewMyProfile(this)"><span class="nav-icon">◉</span> My Profile</a>
   <a class="nav-item" onclick="showPage('explore',this)"><span class="nav-icon">◎</span> Explore</a>
   <a class="nav-item" onclick="openAI()"><span class="nav-icon">✦</span> AI Assistant<span class="nav-badge">New</span></a>
   <a class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">✉</span> Messages<span class="nav-badge red">5</span></a>
@@ -1422,7 +1443,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   </div>
 
   <div class="sidebar-footer">
-    <div class="profile-mini" onclick="showPage('profile',null)">
+    <div class="profile-mini" onclick="viewMyProfile(null)">
       <div class="avatar online">ME</div>
       <div>
         <div class="profile-name">Guest</div>
@@ -1467,15 +1488,12 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       <div class="onb-step" onclick="showPage('people',null)"><div class="onb-step-icon">🤝</div><div class="onb-step-label">Follow 5 People</div></div>
     </div>
   </div>
-  <div class="stories-row">
-    <div class="story"><div class="story-wrap"><div class="story-ring add"><div class="story-inner">🟦</div></div><div class="story-add-btn">+</div></div><div class="story-label">Add Story</div></div>
-    <div class="story" onclick="showToast('👀','Mia K. story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🌊</div></div></div><div class="story-label">Mia K.</div></div>
-    <div class="story" onclick="showToast('👀','Alex T. story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🚀</div></div></div><div class="story-label">Alex T.</div></div>
-    <div class="story" onclick="showToast('👀','Dev C. story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">⚡</div></div></div><div class="story-label">Dev C.</div></div>
-    <div class="story" onclick="showToast('👀','Sarah story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🎨</div></div></div><div class="story-label">Sarah M.</div></div>
-    <div class="story" onclick="showToast('👀','Kai story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🏔</div></div></div><div class="story-label">Kai R.</div></div>
-    <div class="story" onclick="showToast('👀','Luna story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🌙</div></div></div><div class="story-label">Luna X.</div></div>
-    <div class="story" onclick="showToast('👀','Theo story')"><div class="story-wrap"><div class="story-ring"><div class="story-inner">🎯</div></div></div><div class="story-label">Theo N.</div></div>
+  <div class="stories-row" id="storiesRow">
+    <div class="story" onclick="triggerStoryUpload()">
+      <div class="story-wrap"><div class="story-ring add"><div class="story-inner" id="myStoryThumb">🟦</div></div><div class="story-add-btn">+</div></div>
+      <div class="story-label">Add Story</div>
+    </div>
+    <input type="file" id="storyFileInput" accept="image/*,video/*" style="display:none" onchange="handleStoryUpload(event)">
   </div>
   <div class="create-post">
     <div class="create-row">
@@ -1543,7 +1561,8 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       </div>
     </div>
     <div class="profile-action-row">
-      <button class="btn-outline" onclick="openEditProfile()">✏️ Edit Profile</button>
+      <button class="btn-outline" id="pf-edit-btn" onclick="openEditProfile()">✏️ Edit Profile</button>
+      <button class="btn-outline" id="pf-circle-btn" style="display:none" onclick="handleCircleButtonClick()">➕ Add to Circle</button>
       <button class="btn-primary" onclick="showToast('↗','Profile link copied!')">Share Profile</button>
     </div>
   </div>
@@ -1554,6 +1573,14 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div class="profile-tab" onclick="setPTab(this)">About</div>
   </div>
   <div class="profile-content">
+    <div class="circle-section" style="margin-bottom:20px">
+      <div class="section-header" style="margin-bottom:12px">
+        <span class="section-title" style="font-size:15px">👥 Circle <span id="circle-count" style="color:var(--text3);font-weight:500">(0)</span></span>
+      </div>
+      <div id="circle-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+        <div id="circle-empty" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px">No one in the Circle yet.</div>
+      </div>
+    </div>
     <div class="music-banner" id="profileMusicBanner" style="display:none">
       <div class="music-vinyl" id="bannerVinyl"><div class="vinyl-center"></div></div>
       <div class="music-info"><div class="music-title" id="bannerMusicTitle">Loading…</div><div class="music-sub">Profile background music · Auto-plays on visit</div><div class="music-progress"><div class="music-progress-fill" id="bannerProgress"></div></div></div>
@@ -2454,11 +2481,12 @@ function closeComments(){
 
 function buildCommentHTML(c){
   const p=c.profiles||{};
+  const pid=p.id||c.user_id;
   const name=p.full_name||'Hive Member';
   return `<div class="comment-item">
-    ${personAvatarHTML(p,32)}
+    <div onclick="openUserProfile('${pid}')" style="cursor:pointer">${personAvatarHTML(p,32)}</div>
     <div class="comment-body">
-      <div class="comment-author">${escapeHtml(name)}</div>
+      <div class="comment-author" onclick="openUserProfile('${pid}')" style="cursor:pointer">${escapeHtml(name)}</div>
       <div class="comment-text">${escapeHtml(c.content)}</div>
       <div class="comment-actions"><span class="comment-action">${timeAgo(c.created_at)}</span></div>
     </div>
@@ -2955,27 +2983,40 @@ function applyAvatarToEl(el,p,initials,gradient){
 }
 
 function renderProfile(p){
+  // Called only with the LOGGED-IN user's own data — updates sidebar + own profile page
   if(!p)return;
+  renderMySidebar(p);
+  renderProfilePageContent(p,true);
+}
+
+function renderMySidebar(p){
   const name=p.full_name||'Your Name';
   const username=p.username||'user';
   const initials=p.avatar_initials||(name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2))||'ME';
   const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
-
-  // Sidebar
   const pn=document.querySelector('.profile-name'); if(pn)pn.textContent=name;
   const ph=document.querySelector('.profile-handle'); if(ph)ph.textContent='@'+username;
-  const av=document.querySelector('.profile-mini .avatar');
-  applyAvatarToEl(av,p,initials,gradient);
-
-  // Create-post box avatar
+  applyAvatarToEl(document.querySelector('.profile-mini .avatar'),p,initials,gradient);
   applyAvatarToEl(document.getElementById('createBoxAvatar'),p,initials,gradient);
+  const myThumb=document.getElementById('myStoryThumb');
+  if(myThumb)applyAvatarToEl(myThumb,p,initials,gradient);
+}
 
-  // Profile page header
+/* Renders the PROFILE PAGE content for any viewed profile (own or someone else's) */
+let viewedProfileId=null;
+
+function renderProfilePageContent(p,isOwnProfile){
+  if(!p)return;
+  const name=p.full_name||'Hive Member';
+  const username=p.username||'member';
+  const initials=p.avatar_initials||(name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2))||'HM';
+  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+
   const pfName=document.getElementById('pf-name'); if(pfName)pfName.textContent=name+' ✦';
   const pfHandle=document.getElementById('pf-handle');
   if(pfHandle)pfHandle.textContent='@'+username+(p.location?' · '+p.location:'');
   const pfBio=document.getElementById('pf-bio');
-  if(pfBio)pfBio.textContent=p.bio||'Tell the community about yourself — click Edit Profile to add a bio.';
+  if(pfBio)pfBio.textContent=p.bio||(isOwnProfile?'Tell the community about yourself — click Edit Profile to add a bio.':'No bio yet.');
   const pfAvatar=document.getElementById('pf-avatar');
   if(pfAvatar){
     const ring=pfAvatar.querySelector('.online-ring');
@@ -2983,7 +3024,6 @@ function renderProfile(p){
     if(ring)pfAvatar.appendChild(ring);
   }
 
-  // Links row
   const linksWrap=document.getElementById('pf-links');
   const wsEl=document.getElementById('pf-link-website');
   const twEl=document.getElementById('pf-link-twitter');
@@ -2994,14 +3034,53 @@ function renderProfile(p){
   if(p.github){ghEl.style.display='inline-flex';ghEl.querySelector('span').textContent=p.github;ghEl.onclick=()=>window.open('https://github.com/'+p.github,'_blank');anyLink=true;}else if(ghEl)ghEl.style.display='none';
   if(linksWrap)linksWrap.style.display=anyLink?'flex':'none';
 
-  // About tab
   const abLoc=document.getElementById('ab-location'); if(abLoc)abLoc.textContent=p.location||'Not set';
   const abTw=document.getElementById('ab-twitter'); if(abTw)abTw.textContent=p.twitter?'@'+p.twitter.replace('@',''):'Not set';
   const abGh=document.getElementById('ab-github'); if(abGh)abGh.textContent=p.github||'Not set';
   const abWeb=document.getElementById('ab-website'); if(abWeb)abWeb.textContent=p.website||'Not set';
-  const abEmail=document.getElementById('ab-email'); if(abEmail)abEmail.textContent=p.email||'—';
+  const abEmail=document.getElementById('ab-email'); if(abEmail)abEmail.textContent=isOwnProfile?(p.email||'—'):'Hidden';
   const abJoined=document.getElementById('ab-joined');
   if(abJoined&&p.created_at)abJoined.textContent=new Date(p.created_at).toLocaleDateString('en-US',{month:'long',year:'numeric'});
+
+  // Toggle Edit vs Add-to-Circle buttons
+  const editBtn=document.getElementById('pf-edit-btn');
+  const circleBtn=document.getElementById('pf-circle-btn');
+  if(editBtn)editBtn.style.display=isOwnProfile?'inline-flex':'none';
+  if(circleBtn)circleBtn.style.display=isOwnProfile?'none':'inline-flex';
+}
+
+/* ══════════ VIEW ANY USER'S PROFILE ══════════ */
+function viewMyProfile(el){
+  showPage('profile',el||null);
+  if(currentUser)openUserProfile(currentUser.id);
+}
+
+async function openUserProfile(userId){
+  if(!supabaseClient||!userId)return;
+  showPage('profile',null);
+  viewedProfileId=userId;
+  const isOwn=currentUser&&userId===currentUser.id;
+  try{
+    const {data:profile,error}=await supabaseClient.from('profiles').select('*').eq('id',userId).single();
+    if(error)throw error;
+    renderProfilePageContent(profile,isOwn);
+    loadProfilePosts(userId);
+    loadCircleSection(userId);
+    if(!isOwn){
+      updateCircleButtonState(userId);
+      logProfileView(userId);
+    }
+  }catch(e){
+    console.error('[Hive] openUserProfile failed:',e);
+    showToast('⚠️','Could not load that profile.');
+  }
+}
+
+async function logProfileView(viewedId){
+  if(!supabaseClient||!currentUser||viewedId===currentUser.id)return;
+  try{
+    await supabaseClient.from('profile_views').insert({viewer_id:currentUser.id,viewed_id:viewedId});
+  }catch(e){console.error('[Hive] logProfileView failed:',e);}
 }
 
 /* ══════════ EDIT PROFILE MODAL ══════════ */
@@ -3054,7 +3133,7 @@ async function handleAvatarSelect(event){
   try{
     const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
     const path=`${currentUser.id}/avatar-${Date.now()}.${ext}`;
-    const {error}=await supabaseClient.storage.from('avatars').upload(path,file,{upsert:true});
+    const {error}=await supabaseClient.storage.from('avatars').upload(path,file,{upsert:false,contentType:file.type||undefined});
     if(error)throw error;
     const {data}=supabaseClient.storage.from('avatars').getPublicUrl(path);
     pendingAvatarUrl=data.publicUrl;
@@ -3140,11 +3219,13 @@ function escapeHtml(s){return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
 function buildPostCardHTML(post,author,engagement){
   engagement=engagement||{likeCounts:{},commentCounts:{},likedByMe:new Set()};
+  const authorId=author?.id||post.user_id;
   const name=author?.full_name||'Hive Member';
   const username=author?.username||'member';
   const likeCount=engagement.likeCounts[post.id]||0;
   const commentCount=engagement.commentCounts[post.id]||0;
   const isLiked=engagement.likedByMe.has(post.id);
+  const isMine=currentUser&&authorId===currentUser.id;
   let mediaHTML='';
   if(post.media_url){
     if(post.media_type==='video'){
@@ -3153,11 +3234,17 @@ function buildPostCardHTML(post,author,engagement){
       mediaHTML=`<div class="post-image-grid"><img src="${post.media_url}" style="width:100%;max-height:420px;object-fit:cover;border-radius:var(--radius-sm)" alt=""></div>`;
     }
   }
+  const menuItems=isMine
+    ?`<div class="post-menu-item danger" onclick="deletePost('${post.id}',this)">🗑 Delete Post</div>`
+    :`<div class="post-menu-item" onclick="showToast('🚩','Reported — thanks for flagging')">🚩 Report Post</div>`;
   return `<div class="post-card" data-post-id="${post.id}">
     <div class="post-header">
-      ${personAvatarHTML(author||{},40)}
-      <div class="post-meta"><div class="post-author">${escapeHtml(name)}</div><div class="post-sub">@${escapeHtml(username)} <span class="dot"></span> ${timeAgo(post.created_at)}</div></div>
-      <span class="post-more" onclick="showToast('⋯','Post options')">⋯</span>
+      <div onclick="openUserProfile('${authorId}')" style="cursor:pointer">${personAvatarHTML(author||{},40)}</div>
+      <div class="post-meta"><div class="post-author" onclick="openUserProfile('${authorId}')" style="cursor:pointer">${escapeHtml(name)}</div><div class="post-sub">@${escapeHtml(username)} <span class="dot"></span> ${timeAgo(post.created_at)}</div></div>
+      <div class="post-menu-wrap">
+        <span class="post-more" onclick="togglePostMenu(this)">⋯</span>
+        <div class="post-menu-dropdown">${menuItems}</div>
+      </div>
     </div>
     <div class="post-body">${escapeHtml(post.content).replace(/\n/g,'<br>')}</div>
     ${mediaHTML}
@@ -3169,6 +3256,44 @@ function buildPostCardHTML(post,author,engagement){
       <div class="action-btn" onclick="showToast('↗','Copied!')">↗ Share</div>
     </div>
   </div>`;
+}
+
+/* ══════════ POST MENU (three dots) + DELETE ══════════ */
+function togglePostMenu(el){
+  const wrap=el.closest('.post-menu-wrap');
+  const dd=wrap.querySelector('.post-menu-dropdown');
+  const wasOpen=dd.classList.contains('open');
+  document.querySelectorAll('.post-menu-dropdown.open').forEach(d=>d.classList.remove('open'));
+  if(!wasOpen){
+    dd.classList.add('open');
+    setTimeout(()=>document.addEventListener('click',function h(e){
+      if(!wrap.contains(e.target)){dd.classList.remove('open');document.removeEventListener('click',h);}
+    }),0);
+  }
+}
+
+async function deletePost(postId,el){
+  if(!confirm('Delete this post? This cannot be undone.'))return;
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {error}=await supabaseClient.from('posts').delete().eq('id',postId).eq('user_id',currentUser.id);
+    if(error)throw error;
+    const card=document.querySelector(`.post-card[data-post-id="${postId}"]`);
+    if(card)card.remove();
+    // Re-check empty states
+    const feed=document.getElementById('feed');
+    if(feed&&!feed.querySelector('.post-card')){const e=document.getElementById('feedEmptyState');if(e)e.style.display='block';}
+    const pFeed=document.getElementById('profileFeed');
+    if(pFeed&&!pFeed.querySelector('.post-card')){
+      const e=document.getElementById('profileEmptyState');if(e)e.style.display='block';
+      const countEl=document.getElementById('pf-stat-posts');
+      if(countEl)countEl.textContent=Math.max(0,(parseInt(countEl.textContent)||1)-1);
+    }
+    showToast('🗑','Post deleted');
+  }catch(err){
+    console.error('[Hive] deletePost failed:',err);
+    showToast('⚠️',err.message||'Could not delete post.');
+  }
 }
 
 /* ══════════ ENGAGEMENT: LIKES + COMMENTS AGGREGATION ══════════ */
@@ -3807,22 +3932,20 @@ function votePanel(el){
 </script>
 
 <!-- ── STORY VIEWER ── -->
-<div class="story-modal-overlay" id="storyModal" onclick="if(event.target===this)closeStory()">
+<div class="story-modal-overlay" id="storyModal" onclick="if(event.target===this)closeStoryViewer()">
   <div class="story-viewer">
-    <div class="story-progress-bar" id="storyProgress">
-      <div class="story-seg"><div class="story-seg-fill done"></div></div>
-      <div class="story-seg"><div class="story-seg-fill" id="storyFill"></div></div>
-      <div class="story-seg"></div>
-    </div>
-    <div class="story-img" id="storyImg" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe)">
-      <div style="font-size:80px" id="storyEmoji">🌊</div>
+    <div class="story-progress-bar" id="storyProgress"></div>
+    <div class="story-img" id="storyImg" style="background:#111">
+      <img id="storyImgEl" style="display:none;width:100%;height:100%;object-fit:cover" alt="">
+      <video id="storyVidEl" style="display:none;width:100%;height:100%;object-fit:cover" autoplay playsinline></video>
+      <div id="storyLoadingText" style="font-size:14px;color:rgba(255,255,255,.6)">Loading…</div>
     </div>
     <div class="story-hdr">
-      <div class="avatar" id="storyAvatar" style="width:32px;height:32px;font-size:12px;background:linear-gradient(135deg,#f43f5e,#fb923c)">MK</div>
-      <div><div class="story-hdr-name" id="storyName">Mia Kovacs</div><div class="story-hdr-time">2h ago</div></div>
+      <div class="avatar" id="storyAvatar" style="width:32px;height:32px;font-size:12px;background:linear-gradient(135deg,#6366f1,#4f46e5)">?</div>
+      <div><div class="story-hdr-name" id="storyName">Loading…</div><div class="story-hdr-time" id="storyTime"></div></div>
     </div>
-    <div class="story-close" onclick="closeStory()">×</div>
-    <div class="story-caption" id="storyCaption">Working on something exciting! Stay tuned 🚀 #BuildInPublic</div>
+    <div class="story-close" onclick="closeStoryViewer()">×</div>
+    <div class="story-caption" id="storyCaption" style="display:none"></div>
     <div class="story-nav">
       <div class="story-nav-btn" onclick="prevStory()">◀</div>
       <div class="story-nav-btn" onclick="nextStory()">▶</div>
@@ -3895,7 +4018,7 @@ function votePanel(el){
     <div class="mobile-nav-item" onclick="showPage('explore',this)"><span class="mobile-nav-icon">◎</span>Explore</div>
     <div class="mobile-nav-item" onclick="showPage('messages',this)" style="position:relative"><span class="mobile-nav-icon">✉</span>Messages<span class="mobile-nav-dot"></span></div>
     <div class="mobile-nav-item" onclick="showPage('notifications',this)" style="position:relative"><span class="mobile-nav-icon">🔔</span>Alerts<span class="mobile-nav-dot"></span></div>
-    <div class="mobile-nav-item" onclick="showPage('profile',this)"><span class="mobile-nav-icon">◉</span>Profile</div>
+    <div class="mobile-nav-item" onclick="viewMyProfile(this)"><span class="mobile-nav-icon">◉</span>Profile</div>
   </div>
 </div>
 

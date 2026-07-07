@@ -2966,6 +2966,7 @@ async function loadUserProfile(user){
     loadFeedPosts();
     loadProfilePosts(user.id);
     loadNotifications();
+    loadStories();
   }catch(e){
     console.error('[Hive] loadUserProfile failed:',e);
   }
@@ -3081,6 +3082,276 @@ async function logProfileView(viewedId){
   try{
     await supabaseClient.from('profile_views').insert({viewer_id:currentUser.id,viewed_id:viewedId});
   }catch(e){console.error('[Hive] logProfileView failed:',e);}
+}
+
+/* ══════════ CIRCLE SYSTEM (mutual friend-style relationship) ══════════ */
+async function getCircleStatus(otherId){
+  if(!supabaseClient||!currentUser)return{state:'none'};
+  try{
+    const {data,error}=await supabaseClient.from('circle_requests').select('*')
+      .or(`and(requester_id.eq.${currentUser.id},recipient_id.eq.${otherId}),and(requester_id.eq.${otherId},recipient_id.eq.${currentUser.id})`)
+      .maybeSingle();
+    if(error)throw error;
+    if(!data)return{state:'none'};
+    if(data.status==='accepted')return{state:'accepted',row:data};
+    if(data.requester_id===currentUser.id)return{state:'pending_sent',row:data};
+    return{state:'pending_received',row:data};
+  }catch(e){
+    console.error('[Hive] getCircleStatus failed:',e);
+    return{state:'none'};
+  }
+}
+
+async function updateCircleButtonState(otherId){
+  const btn=document.getElementById('pf-circle-btn');
+  if(!btn)return;
+  btn.dataset.otherId=otherId;
+  const status=await getCircleStatus(otherId);
+  btn.className='btn-outline';
+  if(status.state==='accepted'){
+    btn.textContent='✓ In Your Circle';
+    btn.classList.add('accepted');
+  }else if(status.state==='pending_sent'){
+    btn.textContent='⏳ Request Sent';
+    btn.classList.add('pending');
+  }else if(status.state==='pending_received'){
+    btn.textContent='✅ Respond to Request';
+  }else{
+    btn.textContent='➕ Add to Circle';
+  }
+}
+
+async function handleCircleButtonClick(){
+  const btn=document.getElementById('pf-circle-btn');
+  const otherId=btn?.dataset.otherId;
+  if(!otherId||!currentUser||!supabaseClient)return;
+  const status=await getCircleStatus(otherId);
+  try{
+    if(status.state==='none'){
+      const {error}=await supabaseClient.from('circle_requests').insert({requester_id:currentUser.id,recipient_id:otherId,status:'pending'});
+      if(error)throw error;
+      showToast('➕','Circle request sent!');
+    }else if(status.state==='pending_sent'){
+      if(!confirm('Cancel your Circle request?'))return;
+      await supabaseClient.from('circle_requests').delete().eq('id',status.row.id);
+      showToast('↩','Request cancelled');
+    }else if(status.state==='pending_received'){
+      await supabaseClient.from('circle_requests').update({status:'accepted'}).eq('id',status.row.id);
+      showToast('🎉','You are now in each other\'s Circle!');
+    }else if(status.state==='accepted'){
+      if(!confirm('Remove this person from your Circle?'))return;
+      await supabaseClient.from('circle_requests').delete().eq('id',status.row.id);
+      showToast('💔','Removed from Circle');
+    }
+    updateCircleButtonState(otherId);
+    loadCircleSection(otherId);
+  }catch(err){
+    console.error('[Hive] handleCircleButtonClick failed:',err);
+    showToast('⚠️',err.message||'Could not update Circle status.');
+  }
+}
+
+async function acceptCircleRequest(requesterId){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    const {error}=await supabaseClient.from('circle_requests').update({status:'accepted'}).eq('requester_id',requesterId).eq('recipient_id',currentUser.id);
+    if(error)throw error;
+    showToast('🎉','Added to your Circle!');
+    loadNotifications();
+  }catch(e){console.error('[Hive] acceptCircleRequest failed:',e);showToast('⚠️','Could not accept request.');}
+}
+
+async function declineCircleRequest(requesterId){
+  if(!supabaseClient||!currentUser)return;
+  try{
+    await supabaseClient.from('circle_requests').delete().eq('requester_id',requesterId).eq('recipient_id',currentUser.id);
+    showToast('✗','Request declined');
+    loadNotifications();
+  }catch(e){console.error('[Hive] declineCircleRequest failed:',e);}
+}
+
+function buildCircleMemberCardHTML(p){
+  return `<div class="circle-member-card" onclick="openUserProfile('${p.id}')">
+    ${personAvatarHTML(p,48)}
+    <div class="circle-member-name">${escapeHtml(p.full_name||'Member')}</div>
+  </div>`;
+}
+
+async function loadCircleSection(userId){
+  const grid=document.getElementById('circle-grid');
+  const countEl=document.getElementById('circle-count');
+  if(!supabaseClient||!grid)return;
+  try{
+    const {data,error}=await supabaseClient.from('circle_requests').select('*')
+      .eq('status','accepted')
+      .or(`requester_id.eq.${userId},recipient_id.eq.${userId}`);
+    if(error)throw error;
+    const otherIds=(data||[]).map(r=>r.requester_id===userId?r.recipient_id:r.requester_id);
+    if(countEl)countEl.textContent=`(${otherIds.length})`;
+    if(!otherIds.length){
+      grid.innerHTML='<div id="circle-empty" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px">No one in the Circle yet.</div>';
+      return;
+    }
+    const {data:profiles,error:pErr}=await supabaseClient.from('profiles').select('*').in('id',otherIds);
+    if(pErr)throw pErr;
+    grid.innerHTML=(profiles||[]).map(buildCircleMemberCardHTML).join('');
+  }catch(e){
+    console.error('[Hive] loadCircleSection failed:',e);
+  }
+}
+
+/* ══════════ STORIES (visible only to Circle members) ══════════ */
+let storyGroups=[];
+let currentGroupIndex=0;
+let currentStoryIndexInGroup=0;
+let storyAutoTimer=null;
+
+function triggerStoryUpload(){
+  document.getElementById('storyFileInput').click();
+}
+
+async function handleStoryUpload(event){
+  const file=event.target.files[0];
+  if(!file||!currentUser||!supabaseClient)return;
+  const kind=file.type.startsWith('video')?'video':'image';
+  const maxMB=kind==='video'?50:10;
+  if(file.size>maxMB*1024*1024){showToast('⚠️',`File too large — max ${maxMB}MB.`);event.target.value='';return;}
+  showToast('⏳','Uploading your story…');
+  try{
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase();
+    const path=`${currentUser.id}/${Date.now()}.${ext}`;
+    const {error}=await supabaseClient.storage.from('stories').upload(path,file,{upsert:false,contentType:file.type||undefined});
+    if(error)throw error;
+    const {error:insertErr}=await supabaseClient.from('stories').insert({user_id:currentUser.id,storage_path:path,media_type:kind});
+    if(insertErr)throw insertErr;
+    showToast('🎉','Story posted! Visible to your Circle for 24 hours.');
+    event.target.value='';
+    loadStories();
+  }catch(err){
+    console.error('[Hive] handleStoryUpload failed:',err);
+    showToast('⚠️',err.message||'Could not upload story.');
+  }
+}
+
+async function loadStories(){
+  if(!supabaseClient||!currentUser)return;
+  const row=document.getElementById('storiesRow');
+  if(!row)return;
+  try{
+    const {data,error}=await supabaseClient.from('stories').select('*, profiles!stories_user_id_fkey(*)')
+      .gt('expires_at',new Date().toISOString())
+      .order('created_at',{ascending:true});
+    if(error)throw error;
+    const groups={};
+    (data||[]).forEach(s=>{
+      const uid=s.user_id;
+      if(!groups[uid])groups[uid]={user:s.profiles||{id:uid},stories:[]};
+      groups[uid].stories.push(s);
+    });
+    const groupList=Object.values(groups);
+    groupList.sort((a,b)=>(a.user.id===currentUser.id?-1:b.user.id===currentUser.id?1:0));
+    storyGroups=groupList;
+
+    Array.from(row.querySelectorAll('.story.dynamic-story')).forEach(el=>el.remove());
+    const ring=row.querySelector('.story-ring.add');
+    const myGroup=groupList.find(g=>g.user.id===currentUser.id);
+    if(ring)ring.classList.toggle('mine-has-story',!!myGroup);
+
+    groupList.forEach((g,idx)=>{
+      const p=g.user||{};
+      const isMine=p.id===currentUser.id;
+      const bubble=document.createElement('div');
+      bubble.className='story dynamic-story';
+      bubble.onclick=()=>openStoryViewer(idx);
+      const avatarHtml=personAvatarHTML(p,60);
+      bubble.innerHTML=`<div class="story-wrap"><div class="story-ring">${avatarHtml}</div></div><div class="story-label">${isMine?'Your Story':escapeHtml((p.full_name||'Member').split(' ')[0])}</div>`;
+      row.appendChild(bubble);
+    });
+  }catch(e){
+    console.error('[Hive] loadStories failed:',e);
+  }
+}
+
+async function openStoryViewer(groupIdx){
+  currentGroupIndex=groupIdx;
+  currentStoryIndexInGroup=0;
+  document.getElementById('storyModal').classList.add('open');
+  await renderCurrentStory();
+}
+
+function closeStoryViewer(){
+  document.getElementById('storyModal').classList.remove('open');
+  clearTimeout(storyAutoTimer);
+  const vid=document.getElementById('storyVidEl');
+  if(vid)vid.pause();
+}
+
+async function renderCurrentStory(){
+  clearTimeout(storyAutoTimer);
+  const group=storyGroups[currentGroupIndex];
+  if(!group){closeStoryViewer();return;}
+  const story=group.stories[currentStoryIndexInGroup];
+  if(!story){closeStoryViewer();return;}
+  const p=group.user||{};
+
+  document.getElementById('storyName').textContent=p.full_name||'Hive Member';
+  document.getElementById('storyTime').textContent=timeAgo(story.created_at);
+  const avatarEl=document.getElementById('storyAvatar');
+  const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
+  applyAvatarToEl(avatarEl,p,initials,gradient);
+
+  const bar=document.getElementById('storyProgress');
+  bar.innerHTML=group.stories.map((s,i)=>`<div class="story-seg"><div class="story-seg-fill ${i<currentStoryIndexInGroup?'done':''}" ${i===currentStoryIndexInGroup?'id="storyActiveSeg"':''}></div></div>`).join('');
+
+  const imgEl=document.getElementById('storyImgEl');
+  const vidEl=document.getElementById('storyVidEl');
+  const loadingText=document.getElementById('storyLoadingText');
+  imgEl.style.display='none';vidEl.style.display='none';vidEl.pause();vidEl.removeAttribute('src');
+  loadingText.style.display='block';loadingText.textContent='Loading…';
+
+  try{
+    const {data,error}=await supabaseClient.storage.from('stories').createSignedUrl(story.storage_path,3600);
+    if(error)throw error;
+    loadingText.style.display='none';
+    if(story.media_type==='video'){
+      vidEl.src=data.signedUrl;vidEl.style.display='block';
+      vidEl.onended=()=>nextStory();
+      vidEl.play().catch(()=>{});
+    }else{
+      imgEl.src=data.signedUrl;imgEl.style.display='block';
+      setTimeout(()=>{const seg=document.getElementById('storyActiveSeg');if(seg)seg.style.width='100%';},50);
+      storyAutoTimer=setTimeout(()=>nextStory(),5000);
+    }
+  }catch(e){
+    console.error('[Hive] renderCurrentStory failed:',e);
+    loadingText.style.display='block';
+    loadingText.textContent='Could not load this story.';
+  }
+}
+
+function nextStory(){
+  const group=storyGroups[currentGroupIndex];
+  if(!group){closeStoryViewer();return;}
+  if(currentStoryIndexInGroup<group.stories.length-1){
+    currentStoryIndexInGroup++;
+  }else if(currentGroupIndex<storyGroups.length-1){
+    currentGroupIndex++;
+    currentStoryIndexInGroup=0;
+  }else{
+    closeStoryViewer();return;
+  }
+  renderCurrentStory();
+}
+
+function prevStory(){
+  if(currentStoryIndexInGroup>0){
+    currentStoryIndexInGroup--;
+  }else if(currentGroupIndex>0){
+    currentGroupIndex--;
+    currentStoryIndexInGroup=Math.max(0,(storyGroups[currentGroupIndex]?.stories.length||1)-1);
+  }
+  renderCurrentStory();
 }
 
 /* ══════════ EDIT PROFILE MODAL ══════════ */

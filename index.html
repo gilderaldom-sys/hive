@@ -1573,7 +1573,25 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div class="profile-tab" onclick="setPTab(this)">About</div>
   </div>
   <div class="profile-content">
-    <div class="circle-section" style="margin-bottom:20px">
+
+    <!-- ── POSTS TAB ── -->
+    <div id="pf-tab-posts">
+      <div class="music-banner" id="profileMusicBanner" style="display:none">
+        <div class="music-vinyl" id="bannerVinyl"><div class="vinyl-center"></div></div>
+        <div class="music-info"><div class="music-title" id="bannerMusicTitle">Loading…</div><div class="music-sub">Profile background music · Auto-plays on visit</div><div class="music-progress"><div class="music-progress-fill" id="bannerProgress"></div></div></div>
+        <div class="music-controls"><div class="mc-btn" onclick="musicRewind()">⏮</div><div class="mc-btn play-btn" id="bannerPlayBtn" onclick="togglePlay()">▶</div><div class="mc-btn" onclick="toggleMute()" id="muteBtn">🔊</div></div>
+      </div>
+      <div id="profileFeed">
+        <div id="profileEmptyState" style="text-align:center;padding:50px 20px;color:var(--text3)">
+          <div style="font-size:44px;margin-bottom:12px">📝</div>
+          <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px">No posts yet</div>
+          <div style="font-size:13px;max-width:280px;margin:0 auto">Share your first post from the Home page and it'll appear here on your profile.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CIRCLE TAB (separate from posts) ── -->
+    <div id="pf-tab-circle" style="display:none">
       <div class="section-header" style="margin-bottom:12px">
         <span class="section-title" style="font-size:15px">👥 Circle <span id="circle-count" style="color:var(--text3);font-weight:500">(0)</span></span>
       </div>
@@ -1581,19 +1599,17 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
         <div id="circle-empty" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px">No one in the Circle yet.</div>
       </div>
     </div>
-    <div class="music-banner" id="profileMusicBanner" style="display:none">
-      <div class="music-vinyl" id="bannerVinyl"><div class="vinyl-center"></div></div>
-      <div class="music-info"><div class="music-title" id="bannerMusicTitle">Loading…</div><div class="music-sub">Profile background music · Auto-plays on visit</div><div class="music-progress"><div class="music-progress-fill" id="bannerProgress"></div></div></div>
-      <div class="music-controls"><div class="mc-btn" onclick="musicRewind()">⏮</div><div class="mc-btn play-btn" id="bannerPlayBtn" onclick="togglePlay()">▶</div><div class="mc-btn" onclick="toggleMute()" id="muteBtn">🔊</div></div>
-    </div>
-<div id="profileFeed">
-      <div id="profileEmptyState" style="text-align:center;padding:50px 20px;color:var(--text3)">
-        <div style="font-size:44px;margin-bottom:12px">📝</div>
-        <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px">No posts yet</div>
-        <div style="font-size:13px;max-width:280px;margin:0 auto">Share your first post from the Home page and it'll appear here on your profile.</div>
+
+    <!-- ── MEDIA TAB ── -->
+    <div id="pf-tab-media" style="display:none">
+      <div style="text-align:center;padding:50px 20px;color:var(--text3)">
+        <div style="font-size:44px;margin-bottom:12px">🖼️</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text2);margin-bottom:5px">Media gallery coming soon</div>
+        <div style="font-size:13px;max-width:280px;margin:0 auto">Photos and videos from posts will be collected here.</div>
       </div>
     </div>
-    <!-- ABOUT SECTION (hidden by default, shown when About tab clicked) -->
+
+    <!-- ── ABOUT TAB ── -->
     <div id="profileAboutSection" style="display:none">
       <div class="profile-about-grid">
         <div class="about-card"><div class="about-card-label">📍 Location</div><div class="about-card-val" id="ab-location">Not set</div></div>
@@ -1603,8 +1619,8 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
         <div class="about-card"><div class="about-card-label">🌐 Website</div><div class="about-card-val" id="ab-website" style="color:var(--brand);cursor:pointer">Not set</div></div>
         <div class="about-card"><div class="about-card-label">📬 Email</div><div class="about-card-val" id="ab-email">—</div></div>
       </div>
-      </div>
     </div>
+
   </div>
 </div>
 
@@ -2281,7 +2297,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       <div class="modal-close" onclick="document.getElementById('aiModal').classList.remove('open')">×</div>
     </div>
     <div class="ai-chat" id="aiChat">
-      <div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble">Hey Jordan! 👋 I'm Hive AI. I can write posts, find jobs, summarize messages, draft plans, analyze your analytics, or just chat. What do you need?</div></div>
+      <div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble" id="aiGreeting">Hey there! 👋 I'm Hive AI. I can write posts, find jobs, summarize messages, draft plans, analyze your analytics, or just chat. What do you need?</div></div>
     </div>
     <div class="ai-input-row" style="margin-top:12px">
       <input class="ai-input" id="aiInput" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter')sendAI()">
@@ -2777,6 +2793,11 @@ function showToast(icon,msg){
 }
 function openAI(p){
   document.getElementById('aiModal').classList.add('open');
+  const greeting=document.getElementById('aiGreeting');
+  if(greeting){
+    const firstName=currentProfile?.full_name?currentProfile.full_name.split(' ')[0]:'there';
+    greeting.textContent=`Hey ${firstName}! 👋 I'm Hive AI. I can write posts, find jobs, summarize messages, draft plans, analyze your analytics, or just chat. What do you need?`;
+  }
   if(p){document.getElementById('aiInput').value=p;setTimeout(sendAI,400);}
   else document.getElementById('aiInput').focus();
 }

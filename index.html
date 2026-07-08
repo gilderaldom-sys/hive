@@ -1420,7 +1420,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
   <a class="nav-item" onclick="viewMyProfile(this)"><span class="nav-icon">◉</span> My Profile</a>
   <a class="nav-item" onclick="showPage('explore',this)"><span class="nav-icon">◎</span> Explore</a>
   <a class="nav-item" onclick="openAI()"><span class="nav-icon">✦</span> AI Assistant<span class="nav-badge">New</span></a>
-  <a class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">✉</span> Messages<span class="nav-badge red">5</span></a>
+  <a class="nav-item" onclick="showPage('messages',this)"><span class="nav-icon">✉</span> Messages</a>
   <a class="nav-item" onclick="showPage('notifications',this)"><span class="nav-icon">🔔</span> Notifications<span class="nav-badge" id="notifBadge" style="display:none">0</span></a>
 
   <div class="nav-label">Discover</div>
@@ -1476,8 +1476,8 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div class="hive-banner">
       <div class="hive-banner-icon">🐝</div>
       <div>
-        <div class="hive-banner-title">Welcome back, Jordan! Your community is buzzing.</div>
-        <div class="hive-banner-sub">You have 12 new notifications · 5 unread messages · 3 upcoming events</div>
+        <div class="hive-banner-title" id="welcomeBannerTitle">Welcome to Hive! Your community is buzzing.</div>
+        <div class="hive-banner-sub" id="welcomeBannerSub">Sign in to see your personalized activity</div>
       </div>
       <button class="hive-banner-btn" onclick="showPage('notifications',null);showToast('🔔','Viewing notifications')">View All</button>
     </div>
@@ -2540,20 +2540,37 @@ function notificationText(n){
   const actorName=escapeHtml(n.actor?.full_name||'Someone');
   if(n.type==='like')return `<b>${actorName}</b> liked your post`;
   if(n.type==='comment')return `<b>${actorName}</b> commented on your post`;
+  if(n.type==='view')return `<b>${actorName}</b> viewed your profile`;
+  if(n.type==='circle_request')return `<b>${actorName}</b> wants to add you to their Circle`;
+  if(n.type==='circle_accept')return `<b>${actorName}</b> accepted your Circle request`;
   return `<b>${actorName}</b> interacted with your post`;
 }
 function notificationIcon(type){
   if(type==='like')return {emoji:'❤',bg:'rgba(244,63,94,.12)'};
   if(type==='comment')return {emoji:'💬',bg:'rgba(99,102,241,.12)'};
+  if(type==='view')return {emoji:'👀',bg:'rgba(59,130,246,.12)'};
+  if(type==='circle_request')return {emoji:'➕',bg:'rgba(245,158,11,.12)'};
+  if(type==='circle_accept')return {emoji:'🎉',bg:'rgba(34,197,94,.12)'};
   return {emoji:'🔔',bg:'rgba(148,163,184,.12)'};
 }
 function buildNotificationHTML(n){
   const icon=notificationIcon(n.type);
-  return `<div class="notif-item" onclick="markNotificationRead('${n.id}',this)" style="cursor:pointer">
+  const clickAction=n.type==='circle_request'?'':`onclick="markNotificationRead('${n.id}',this)" style="cursor:pointer"`;
+  let actions='';
+  if(n.type==='circle_request'){
+    actions=`<div class="notif-action" style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn-primary btn-sm" onclick="event.stopPropagation();acceptCircleRequest('${n.actor_id}');markNotificationRead('${n.id}',this.closest('.notif-item'))">Accept</button>
+      <button class="btn-ghost btn-sm" onclick="event.stopPropagation();declineCircleRequest('${n.actor_id}');markNotificationRead('${n.id}',this.closest('.notif-item'))">Decline</button>
+    </div>`;
+  }else if(n.type==='view'||n.type==='circle_accept'){
+    actions=`<div class="notif-action" style="margin-top:6px"><span style="font-size:12px;color:var(--brand);cursor:pointer" onclick="event.stopPropagation();openUserProfile('${n.actor_id}')">View profile →</span></div>`;
+  }
+  return `<div class="notif-item" ${clickAction}>
     <div class="notif-icon-wrap" style="background:${icon.bg}">${icon.emoji}</div>
     <div class="notif-content">
       <div class="notif-text">${notificationText(n)}</div>
       <div class="notif-time">${timeAgo(n.created_at)}</div>
+      ${actions}
     </div>
     ${!n.is_read?'<div class="notif-unread-dot"></div>':''}
   </div>`;
@@ -2967,8 +2984,30 @@ async function loadUserProfile(user){
     loadProfilePosts(user.id);
     loadNotifications();
     loadStories();
+    updateWelcomeBanner(profile);
   }catch(e){
     console.error('[Hive] loadUserProfile failed:',e);
+  }
+}
+
+async function updateWelcomeBanner(profile){
+  const titleEl=document.getElementById('welcomeBannerTitle');
+  const subEl=document.getElementById('welcomeBannerSub');
+  if(!titleEl||!subEl)return;
+  const firstName=(profile.full_name||'there').split(' ')[0];
+  titleEl.textContent=`Welcome back, ${firstName}! Your community is buzzing.`;
+  subEl.textContent='Loading your activity…';
+  try{
+    const [notifRes,pendingCircleRes]=await Promise.all([
+      supabaseClient.from('notifications').select('id',{count:'exact',head:true}).eq('recipient_id',currentUser.id).eq('is_read',false),
+      supabaseClient.from('circle_requests').select('id',{count:'exact',head:true}).eq('recipient_id',currentUser.id).eq('status','pending')
+    ]);
+    const unreadNotifs=notifRes.count||0;
+    const pendingRequests=pendingCircleRes.count||0;
+    subEl.textContent=`You have ${unreadNotifs} new notification${unreadNotifs===1?'':'s'}${pendingRequests>0?` · ${pendingRequests} Circle request${pendingRequests===1?'':'s'} waiting`:''}`;
+  }catch(e){
+    console.error('[Hive] updateWelcomeBanner failed:',e);
+    subEl.textContent='Ready when you are.';
   }
 }
 
@@ -3686,9 +3725,9 @@ function personAvatarHTML(p,size){
 function buildSidebarFollowItemHTML(p){
   const following=myFollowingIds.has(p.id);
   return `<div class="follow-item">
-    ${personAvatarHTML(p)}
-    <div class="follow-info"><div class="follow-name">${escapeHtml(p.full_name||'Hive Member')}</div><div class="follow-handle">@${escapeHtml(p.username||'member')}</div></div>
-    <button class="follow-btn ${following?'following':''}" onclick="toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
+    <div onclick="openUserProfile('${p.id}')" style="cursor:pointer">${personAvatarHTML(p)}</div>
+    <div class="follow-info" onclick="openUserProfile('${p.id}')" style="cursor:pointer"><div class="follow-name">${escapeHtml(p.full_name||'Hive Member')}</div><div class="follow-handle">@${escapeHtml(p.username||'member')}</div></div>
+    <button class="follow-btn ${following?'following':''}" onclick="event.stopPropagation();toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
   </div>`;
 }
 
@@ -3714,8 +3753,8 @@ function buildPersonCardHTML(p){
   const following=myFollowingIds.has(p.id);
   const joined=p.created_at?new Date(p.created_at).toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
   return `<div class="people-card">
-    ${personAvatarHTML(p,62).replace('class="avatar"','class="avatar people-avatar"')}
-    <div class="people-name">${escapeHtml(p.full_name||'Hive Member')}</div>
+    <div onclick="openUserProfile('${p.id}')" style="cursor:pointer">${personAvatarHTML(p,62).replace('class="avatar"','class="avatar people-avatar"')}</div>
+    <div class="people-name" onclick="openUserProfile('${p.id}')" style="cursor:pointer">${escapeHtml(p.full_name||'Hive Member')}</div>
     <div class="people-handle">@${escapeHtml(p.username||'member')}</div>
     <div class="people-bio">${escapeHtml(p.bio||'No bio yet.')}</div>
     ${joined?`<div class="mutual-tag">🐝 Joined ${joined}</div>`:''}
@@ -3816,7 +3855,7 @@ async function runSearch(q){
       const following=myFollowingIds.has(p.id);
       const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
       const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
-      return `<div class="search-result-item">
+      return `<div class="search-result-item" onclick="openUserProfile('${p.id}');closeSearch()" style="cursor:pointer">
         <div class="search-result-icon" style="background:${gradient}">${initials}</div>
         <div><div class="search-result-name">${escapeHtml(p.full_name||'Hive Member')}</div><div class="search-result-sub">@${escapeHtml(p.username||'member')}</div></div>
         <button class="follow-btn btn-sm ${following?'following':''}" style="margin-left:auto" onclick="event.stopPropagation();toggleFollow('${p.id}',this)">${following?'Following':'Follow'}</button>
@@ -4027,6 +4066,23 @@ async function logoutUser(){
   if(pFeed)Array.from(pFeed.querySelectorAll('.post-card')).forEach(el=>el.remove());
   const pEmpty=document.getElementById('profileEmptyState');
   if(pEmpty)pEmpty.style.display='block';
+  // Clear stories row back to just "Add Story"
+  const storiesRow=document.getElementById('storiesRow');
+  if(storiesRow)Array.from(storiesRow.querySelectorAll('.story.dynamic-story')).forEach(el=>el.remove());
+  storyGroups=[];
+  // Reset welcome banner
+  const wt=document.getElementById('welcomeBannerTitle');
+  const ws=document.getElementById('welcomeBannerSub');
+  if(wt)wt.textContent='Welcome to Hive! Your community is buzzing.';
+  if(ws)ws.textContent='Sign in to see your personalized activity';
+  // Clear notifications badge/list
+  const badge=document.getElementById('notifBadge');
+  if(badge)badge.style.display='none';
+  const notifList=document.getElementById('notificationsList');
+  if(notifList)notifList.innerHTML=`<div style="text-align:center;padding:70px 20px;color:var(--text3)"><div style="font-size:52px;margin-bottom:14px">🔔</div><div style="font-size:17px;font-weight:700;color:var(--text2);margin-bottom:6px">No notifications yet</div></div>`;
+  // Clear circle section
+  const circleGrid=document.getElementById('circle-grid');
+  if(circleGrid)circleGrid.innerHTML='<div id="circle-empty" style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text3);font-size:13px">No one in the Circle yet.</div>';
   // Show auth screen
   const s=document.getElementById('authScreen');
   if(s){

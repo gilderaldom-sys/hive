@@ -1567,10 +1567,10 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     </div>
   </div>
   <div class="profile-tabs">
-    <div class="profile-tab active" onclick="setPTab(this)">Posts</div>
-    <div class="profile-tab" onclick="setPTab(this)">Media</div>
-    <div class="profile-tab" onclick="setPTab(this)">Communities</div>
-    <div class="profile-tab" onclick="setPTab(this)">About</div>
+    <div class="profile-tab active" onclick="setPTab(this,'posts')">Posts</div>
+    <div class="profile-tab" onclick="setPTab(this,'circle')">Circle</div>
+    <div class="profile-tab" onclick="setPTab(this,'media')">Media</div>
+    <div class="profile-tab" onclick="setPTab(this,'about')">About</div>
   </div>
   <div class="profile-content">
 
@@ -2436,7 +2436,15 @@ function showPage(id,navEl){
   window.scrollTo(0,0);
 }
 function setTab(el){const row=el.closest('.tab-row');if(row){row.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}}
-function setPTab(el){document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function setPTab(el,tab){
+  document.querySelectorAll('.profile-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const panels={posts:'pf-tab-posts',circle:'pf-tab-circle',media:'pf-tab-media',about:'profileAboutSection'};
+  Object.values(panels).forEach(id=>{const p=document.getElementById(id);if(p)p.style.display='none';});
+  const target=document.getElementById(panels[tab]||'pf-tab-posts');
+  if(target)target.style.display='block';
+  if(tab==='circle'&&viewedProfileId)loadCircleSection(viewedProfileId);
+}
 function setExploreChip(el){document.querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');showToast('🔍','Filtering: '+el.textContent);}
 function setChip(el){const p=el.parentElement;p.querySelectorAll('.filter-chip,.cat-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');}
 document.querySelectorAll('.nav-item').forEach(i=>i.addEventListener('click',function(){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));this.classList.add('active');}));
@@ -3121,6 +3129,9 @@ async function openUserProfile(userId){
   showPage('profile',null);
   viewedProfileId=userId;
   const isOwn=currentUser&&userId===currentUser.id;
+  // Always reset to the Posts tab when opening a (new) profile
+  const firstTab=document.querySelector('.profile-tab');
+  if(firstTab)setPTab(firstTab,'posts');
   try{
     const {data:profile,error}=await supabaseClient.from('profiles').select('*').eq('id',userId).single();
     if(error)throw error;

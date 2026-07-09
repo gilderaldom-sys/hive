@@ -2809,30 +2809,55 @@ function openAI(p){
   if(p){document.getElementById('aiInput').value=p;setTimeout(sendAI,400);}
   else document.getElementById('aiInput').focus();
 }
-const aiR={
-  default:["Here's a great draft based on your request! Feel free to refine it.","Found some relevant insights — want me to expand on any area?","Done! Here's what I recommend going forward.","Great question! Let me break this down for you..."],
-  post:"Here's a Hive post draft:\n\n🚀 Excited to share what we've been building at Hive — a platform that combines social networking, productivity tools, and AI into one seamless experience.\n\nKey things I learned:\n• Build for the user's full workflow, not just one part of it\n• Speed and simplicity beat features every time\n• Your community is your most valuable asset\n\n#BuildInPublic #ProductLaunch #Tech #Hive",
-  job:"Based on your profile (Senior Frontend Engineer, React/Next.js, AI tools), here are your top matches:\n\n1. 🏢 Vercel — Senior Frontend Engineer ($160-200k + equity)\n2. 🏢 Linear — UI/Product Engineer ($140-180k + equity)\n3. 🏢 Anthropic — Frontend Infra Lead ($170-220k + equity)\n4. 🏢 Figma — Staff Engineer ($200-250k + equity)\n\nWant me to tailor your resume or draft a cover letter for any of these?",
-  summary:"📬 Here's your message summary for today:\n\n• Mia Kovacs: Wants to schedule a design review for Thursday at 3pm\n• Alex Thompson: Thanks for the API feedback, wants to sync when you're free\n• Dev Collective: 3 new replies to your poll comment\n• Kai Reyes: Interested in collaborating on a UI system\n• Sarah Mendez: Shared Kyoto photos from the trip\n\nWant me to draft replies for any of these?",
-  plan:"Here's a lean SaaS business plan outline:\n\n1️⃣ Problem — Knowledge workers waste 3h/day switching between disconnected tools\n2️⃣ Solution — Unified workspace: social + productivity + AI in one platform\n3️⃣ Market — 500M knowledge workers, $50B TAM\n4️⃣ Revenue — $15/user/mo SaaS + AI credits + marketplace fees\n5️⃣ GTM — Developer & creator communities → Teams → Enterprise\n6️⃣ Moat — Network effects + proprietary AI recommendations\n\nWant me to go deeper on any section?",
-  content:"Here's your content plan for this week:\n\n📅 Monday: Share a thread on your top 3 productivity hacks\n📅 Tuesday: Engage in Dev Collective — comment on 5 posts\n📅 Wednesday: Post a \"day in the life\" story\n📅 Thursday: Share a technical insight about your latest build\n📅 Friday: Community highlight — shout out someone who inspired you\n\nEstimated reach: 8-12k impressions\n\nWant me to draft any of these posts?"
-};
-function sendAI(){
-  const inp=document.getElementById('aiInput'),text=inp.value.trim();if(!text)return;
+let aiConversation=[];
+
+async function sendAI(){
+  const inp=document.getElementById('aiInput'),text=inp.value.trim();
+  if(!text)return;
   const chat=document.getElementById('aiChat');
   chat.innerHTML+=`<div class="ai-msg user"><div class="ai-bubble">${text.replace(/</g,'&lt;')}</div></div>`;
   inp.value='';
+  chat.scrollTop=chat.scrollHeight;
+
+  aiConversation.push({role:'user',content:text});
+
   const t=document.createElement('div');t.className='ai-msg';
   t.innerHTML=`<div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble" style="color:var(--text3)">Thinking…</div>`;
   chat.appendChild(t);chat.scrollTop=chat.scrollHeight;
-  const low=text.toLowerCase();
-  const r=low.includes('post')||low.includes('write')||low.includes('draft')?aiR.post:
-           low.includes('job')||low.includes('hire')||low.includes('career')?aiR.job:
-           low.includes('message')||low.includes('dm')||low.includes('summar')?aiR.summary:
-           low.includes('plan')||low.includes('business')||low.includes('startup')?aiR.plan:
-           low.includes('content')||low.includes('week')||low.includes('calendar')?aiR.content:
-           aiR.default[Math.floor(Math.random()*aiR.default.length)];
-  setTimeout(()=>{t.remove();chat.innerHTML+=`<div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble" style="white-space:pre-line">${r}</div></div>`;chat.scrollTop=chat.scrollHeight;},1100);
+
+  if(!supabaseClient||!currentUser){
+    t.remove();
+    chat.innerHTML+=`<div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble">Please sign in so I can chat with you! 🐝</div></div>`;
+    chat.scrollTop=chat.scrollHeight;
+    return;
+  }
+
+  try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    const userName=currentProfile?.full_name||'there';
+    const res=await fetch(`${SUPA_URL}/functions/v1/hive-ai-chat`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${session?.access_token||SUPA_KEY}`,
+        'apikey':SUPA_KEY
+      },
+      body:JSON.stringify({messages:aiConversation,userName})
+    });
+    const data=await res.json();
+    t.remove();
+    if(!res.ok||data.error){
+      throw new Error(data.error||'AI request failed');
+    }
+    aiConversation.push({role:'assistant',content:data.reply});
+    chat.innerHTML+=`<div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble" style="white-space:pre-line">${escapeHtml(data.reply)}</div></div>`;
+    chat.scrollTop=chat.scrollHeight;
+  }catch(err){
+    console.error('[Hive AI] sendAI failed:',err);
+    t.remove();
+    chat.innerHTML+=`<div class="ai-msg"><div class="ai-orb" style="width:26px;height:26px;font-size:11px;flex-shrink:0">✦</div><div class="ai-bubble">Sorry, I ran into an issue reaching the AI service. Please try again in a moment. 🐝</div></div>`;
+    chat.scrollTop=chat.scrollHeight;
+  }
 }
 let musicState={videoId:null,title:'No track set',thumbnail:null,playing:false,muted:false,volume:70,autoplay:true,loop:true,showPlayer:true,progress:0,storageKey:'hive_profile_music'};
 let progressInterval=null;

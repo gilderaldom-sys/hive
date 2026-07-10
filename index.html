@@ -1541,12 +1541,6 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
       </div>
       <button class="hive-banner-btn" onclick="showPage('notifications',null);showToast('🔔','Viewing notifications')">View All</button>
     </div>
-    <div class="onboarding-steps">
-      <div class="onb-step done"><div class="onb-step-icon">✅</div><div class="onb-step-label">Create Profile</div></div>
-      <div class="onb-step done"><div class="onb-step-icon">✅</div><div class="onb-step-label">Join Community</div></div>
-      <div class="onb-step" onclick="showToast('📝','Post something!')"><div class="onb-step-icon">✏️</div><div class="onb-step-label">First Post</div></div>
-      <div class="onb-step" onclick="showPage('people',null)"><div class="onb-step-icon">🤝</div><div class="onb-step-label">Follow 5 People</div></div>
-    </div>
   </div>
   <div class="stories-row" id="storiesRow">
     <div class="story" onclick="triggerStoryUpload()">
@@ -3126,7 +3120,11 @@ function toggleLiChatPanel(){
   if(panel.classList.contains('open')&&!liActiveConvId)loadLiConversations();
 }
 
-async function loadLiConversations(){
+async function loadLiConversations(render){
+  // render=true (default) re-draws the conversation LIST view.
+  // Pass render=false to just refresh data silently (e.g. while a thread is open)
+  // without wiping the currently-visible thread out from under the user.
+  if(render===undefined)render=true;
   if(!supabaseClient||!currentUser)return;
   try{
     const {data:parts,error}=await supabaseClient.from('conversation_participants').select('conversation_id').eq('user_id',currentUser.id);
@@ -3134,7 +3132,8 @@ async function loadLiConversations(){
     const convIds=(parts||[]).map(p=>p.conversation_id);
     if(!convIds.length){
       liConversations=[];
-      renderLiConvList();
+      if(render&&!liActiveConvId)renderLiConvList();
+      updateLiUnreadBadge();
       return;
     }
     const {data:convs,error:cErr}=await supabaseClient.from('conversations').select('*').in('id',convIds).order('last_message_at',{ascending:false});
@@ -3161,7 +3160,8 @@ async function loadLiConversations(){
       other:profilesById[otherIdByConv[c.id]]||{full_name:'Hive Member'},
       lastMessage:lastMsgByConv[c.id]||null
     }));
-    renderLiConvList();
+    // Only redraw the LIST if we're not currently inside an open thread
+    if(render&&!liActiveConvId)renderLiConvList();
     updateLiUnreadBadge();
   }catch(e){console.error('[Hive] loadLiConversations failed:',e);}
 }

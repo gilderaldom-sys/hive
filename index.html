@@ -1593,10 +1593,18 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
 
 <div class="page" id="page-profile">
   <div class="topbar"><span class="topbar-title">Profile</span><div class="topbar-right"><button class="btn-outline btn-sm" onclick="openMusicSettings()">🎵 Profile Music</button><button class="btn-outline btn-sm" onclick="showToast('✏','Edit profile')">✏ Edit Profile</button></div></div>
-  <div class="profile-cover">
-    <div class="cover-hex"></div>
+  <div class="profile-cover" id="pf-cover">
+    <div class="cover-hex" id="pf-cover-hex"></div>
     <div class="profile-avatar-wrap"><div class="profile-avatar-lg" id="pf-avatar">JD<div class="online-ring"></div></div></div>
     <div class="music-orb" id="coverMusicOrb" onclick="toggleFloatPlayer()" title="Profile music" style="display:none">🎵</div>
+    <input type="file" id="coverFileInput" accept="image/*" style="display:none" onchange="handleCoverSelect(event)">
+    <div class="cover-edit-wrap" id="pf-cover-edit-wrap" style="display:none">
+      <button class="cover-edit-btn" onclick="toggleCoverMenu(event)">📷 Edit Cover Photo</button>
+      <div class="cover-menu-dropdown" id="coverMenuDropdown">
+        <div class="cover-menu-item" onclick="document.getElementById('coverFileInput').click();closeCoverMenu()">📤 Upload Photo</div>
+        <div class="cover-menu-item danger" id="coverRemoveItem" style="display:none" onclick="removeCoverPhoto()">🗑 Remove Cover Photo</div>
+      </div>
+    </div>
   </div>
   <div class="profile-info-bar">
     <div>
@@ -3320,12 +3328,27 @@ async function updateWelcomeBanner(profile){
 
 function applyAvatarToEl(el,p,initials,gradient){
   if(!el)return;
+  // Preserve any child elements that aren't the avatar image itself (e.g. .online-ring status dot)
+  const keepChildren=Array.from(el.children).filter(c=>!c.classList.contains('hive-avatar-img'));
   if(p.avatar_url){
-    el.style.background=`center/cover no-repeat url('${p.avatar_url}')`;
+    el.style.background='transparent';
     el.textContent='';
+    let img=el.querySelector('.hive-avatar-img');
+    if(!img){
+      img=document.createElement('img');
+      img.className='hive-avatar-img';
+      img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
+      img.alt='';
+    }
+    img.src=p.avatar_url;
+    el.innerHTML='';
+    el.appendChild(img);
+    keepChildren.forEach(c=>el.appendChild(c));
   }else{
     el.style.background=gradient;
+    el.innerHTML='';
     el.textContent=initials;
+    keepChildren.forEach(c=>el.appendChild(c));
   }
 }
 

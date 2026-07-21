@@ -50,7 +50,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .sidebar-footer{margin-top:auto;border-top:1px solid var(--border);padding-top:14px;flex-shrink:0}
 .profile-mini{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s}
 .profile-mini:hover{background:var(--surface2)}
-.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--hive-teal),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:white;position:relative}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--hive-teal),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0;color:white;position:relative;overflow:hidden}
 .avatar.online::after{content:'';position:absolute;bottom:1px;right:1px;width:9px;height:9px;background:#22c55e;border-radius:50%;border:2px solid white}
 .profile-name{font-size:13px;font-weight:600;color:var(--text)}
 .profile-handle{font-size:11px;color:var(--text3)}
@@ -196,7 +196,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .profile-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 50%,rgba(245,247,255,.85) 100%)}
 .cover-hex{position:absolute;inset:0;opacity:.15;background-image:radial-gradient(circle at 25% 60%,var(--brand) 0%,transparent 45%),radial-gradient(circle at 75% 30%,var(--honey) 0%,transparent 40%)}
 .profile-avatar-wrap{position:absolute;bottom:-42px;left:26px;z-index:2}
-.profile-avatar-lg{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--honey));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:white;border:4px solid white;position:relative;box-shadow:0 4px 20px rgba(99,102,241,.3)}
+.profile-avatar-lg{width:86px;height:86px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--honey));display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:white;border:4px solid white;position:relative;box-shadow:0 4px 20px rgba(99,102,241,.3);overflow:hidden}
 .online-ring{position:absolute;bottom:4px;right:4px;width:13px;height:13px;background:#22c55e;border-radius:50%;border:3px solid white}
 .profile-info-bar{padding:52px 26px 18px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
 .pname{font-family:'Plus Jakarta Sans',sans-serif;font-size:21px;font-weight:800;color:var(--text)}
@@ -525,7 +525,7 @@ body.dark .post-card,.dark .card,.dark .event-card,.dark .community-card,.dark .
 .people-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .people-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:0 2px 10px rgba(99,102,241,.06)}
 .people-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(99,102,241,.14)}
-.people-avatar{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;margin:0 auto 10px;position:relative}
+.people-avatar{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:white;margin:0 auto 10px;position:relative;overflow:hidden}
 .people-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px}
 .people-handle{font-size:12px;color:var(--text3);margin-bottom:8px}
 .people-bio{font-size:12px;color:var(--text2);line-height:1.4;margin-bottom:12px}
@@ -2400,7 +2400,7 @@ body.dark .dark-toggle-switch::after{transform:translateX(16px)}
     <div style="display:flex;flex-direction:column;gap:14px;max-height:65vh;overflow-y:auto;padding-right:4px">
 
       <div style="text-align:center">
-        <div id="editAvatarPreview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;margin:0 auto 10px;font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden">JD</div>
+        <div id="editAvatarPreview" style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800;color:white;margin:0 auto 10px;font-family:'Plus Jakarta Sans',sans-serif;overflow:hidden;position:relative">JD</div>
         <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarSelect(event)">
         <button type="button" class="btn-outline btn-sm" onclick="document.getElementById('avatarFileInput').click()" style="margin-bottom:12px">📷 Change Photo</button>
         <div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">Or pick a color avatar instead</div>
@@ -3349,18 +3349,18 @@ async function updateWelcomeBanner(profile){
 
 function applyAvatarToEl(el,p,initials,gradient){
   if(!el)return;
-  // Preserve any child elements that aren't the avatar image itself (e.g. .online-ring status dot)
+  // Preserve any non-avatar-image children (e.g. the .online-ring status dot)
   const keepChildren=Array.from(el.children).filter(c=>!c.classList.contains('hive-avatar-img'));
+  el.style.position=el.style.position||'relative';
+  el.style.overflow='hidden';
   if(p.avatar_url){
     el.style.background='transparent';
     el.textContent='';
-    let img=el.querySelector('.hive-avatar-img');
-    if(!img){
-      img=document.createElement('img');
-      img.className='hive-avatar-img';
-      img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';
-      img.alt='';
-    }
+    const img=document.createElement('img');
+    img.className='hive-avatar-img';
+    // Absolute + inset:0 guarantees full coverage regardless of any parent flex/layout quirks
+    img.style.cssText='position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block;border:none;margin:0;padding:0';
+    img.alt='';
     img.src=p.avatar_url;
     el.innerHTML='';
     el.appendChild(img);
@@ -3789,7 +3789,7 @@ function openEditProfile(){
   const preview=document.getElementById('editAvatarPreview');
   if(currentProfile.avatar_url){
     preview.style.background='transparent';
-    preview.innerHTML=`<img src="${currentProfile.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    preview.innerHTML=`<img src="${currentProfile.avatar_url}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block;border:none;margin:0">`;
   }else{
     preview.innerHTML=(currentProfile.avatar_initials||'ME');
   }
@@ -3881,7 +3881,7 @@ async function handleAvatarSelect(event){
     const {data}=supabaseClient.storage.from('avatars').getPublicUrl(path);
     pendingAvatarUrl=data.publicUrl;
     preview.style.background='transparent';
-    preview.innerHTML=`<img src="${data.publicUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    preview.innerHTML=`<img src="${data.publicUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block;border:none;margin:0">`;
     showToast('📷','Photo ready — click Save Changes to apply');
   }catch(err){
     console.error('[Hive] handleAvatarSelect failed:',err);
@@ -4148,7 +4148,7 @@ async function toggleFollow(targetId,btnEl){
 function personAvatarHTML(p,size){
   const dim=size?('width:'+size+'px;height:'+size+'px;font-size:'+Math.round(size*0.36)+'px'):'';
   if(p.avatar_url){
-    return `<div class="avatar" style="${dim};padding:0;overflow:hidden"><img src="${p.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" alt=""></div>`;
+    return `<div class="avatar" style="${dim};padding:0;overflow:hidden;position:relative"><img src="${p.avatar_url}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:50%;display:block;border:none;margin:0" alt=""></div>`;
   }
   const initials=p.avatar_initials||(p.full_name||'?').split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
   const gradient=AVATAR_GRADIENTS[p.avatar_color]||AVATAR_GRADIENTS.indigo;
